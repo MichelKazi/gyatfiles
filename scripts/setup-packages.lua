@@ -1,5 +1,5 @@
--- Utility function to check if a command exists
-function command_exists(command)
+-- Utility local function to check if a command exists
+local function command_exists(command)
 	local handle = io.popen("command -v " .. command .. " >/dev/null 2>&1; echo $?")
 	local result = handle:read("*a")
 	handle:close()
@@ -46,68 +46,102 @@ for manager in string.gmatch(selected_managers, "[^\n]+") do
 	package_managers[manager] = true
 end
 
--- Function to run a command with a progress bar and display output
-function run_with_progress(title, command)
-	local gum_command = string.format('gum spin --title "%s" --spinner dot', title)
-	local gum_process = io.popen(gum_command .. " &") -- Start Gum spinner in the background
-
-	-- Open a pipe to execute the command and capture its output in real-time
-	local process = io.popen(command)
-
-	-- Loop through the command output and print it in real-time while the spinner runs
-	for line in process:lines() do
-		print(line) -- Print the command output to the terminal
+-- local function to run a command for each package with a progress bar
+local function run_with_progress(title, package_list_command, install_command_template)
+	-- Capture the list of packages to install
+	local handle = io.popen(package_list_command)
+	local packages = {}
+	for package in handle:lines() do
+		table.insert(packages, package)
 	end
+	handle:close()
 
-	process:close()
-	os.execute("kill $(pgrep gum)") -- Kill the Gum spinner when the command finishes
+	-- Install each package with the spinner showing progress
+	for _, package in ipairs(packages) do
+		local gum_command = string.format('gum spin --title "Installing %s... %s" --spinner dot -- "', title, package)
+		local install_command = install_command_template:gsub("{package}", package)
+		os.execute(gum_command .. install_command .. '"')
+	end
 end
--- Functions to install packages
+
+-- local functions to install packages with the spinner updating per package
 local function install_homebrew()
 	if package_managers["Homebrew"] and command_exists("brew") then
-		run_with_progress("Installing Homebrew packages", "brew bundle --file=Brewfile")
+		run_with_progress(
+			"Homebrew packages",
+			"brew list", -- Command to list installed brew packages
+			"brew install {package}" -- Command to install brew packages
+		)
 	end
 end
 
 local function install_cargo()
 	if package_managers["Cargo"] and command_exists("cargo") then
-		run_with_progress("Installing Cargo packages", "cat cargo.txt | xargs cargo install")
+		run_with_progress(
+			"Cargo packages",
+			"cat cargo.txt", -- Command to list packages from cargo.txt
+			"cargo install {package}" -- Command to install Cargo packages
+		)
 	end
 end
 
 local function install_yarn()
 	if package_managers["Yarn"] and command_exists("yarn") then
-		run_with_progress("Installing Yarn packages", "cat yarn.txt | xargs yarn global add")
+		run_with_progress(
+			"Yarn packages",
+			"cat yarn.txt", -- Command to list packages from yarn.txt
+			"yarn global add {package}" -- Command to install Yarn packages
+		)
 	end
 end
 
 local function install_npm()
 	if package_managers["npm"] and command_exists("npm") then
-		run_with_progress("Installing npm packages", "cat npm.txt | xargs npm install -g")
+		run_with_progress(
+			"npm packages",
+			"cat npm.txt", -- Command to list packages from npm.txt
+			"npm install -g {package}" -- Command to install npm packages
+		)
 	end
 end
 
 local function install_gem()
 	if package_managers["Gem"] and command_exists("gem") then
-		run_with_progress("Installing Gem packages", "cat gemfile | xargs gem install")
+		run_with_progress(
+			"Gem packages",
+			"cat gemfile", -- Command to list packages from gemfile
+			"gem install {package}" -- Command to install Ruby gems
+		)
 	end
 end
 
 local function install_pip3()
 	if package_managers["pip3"] and command_exists("pip3") then
-		run_with_progress("Installing pip3 packages", "pip3 install -r pip.txt")
+		run_with_progress(
+			"pip3 packages",
+			"cat pip.txt", -- Command to list packages from pip.txt
+			"pip3 install {package}" -- Command to install pip3 packages
+		)
 	end
 end
 
 local function install_sdkman()
 	if package_managers["SDKMAN"] and command_exists("sdk") then
-		run_with_progress("Installing SDKMAN packages", "cat sdkman.txt | xargs -I {} sdk install {}")
+		run_with_progress(
+			"SDKMAN packages",
+			"cat sdkman.txt", -- Command to list packages from sdkman.txt
+			"sdk install {package}" -- Command to install SDKMAN packages
+		)
 	end
 end
 
 local function install_golang()
 	if package_managers["Golang"] and command_exists("go") then
-		run_with_progress("Installing Golang packages", "cat go.txt | xargs -I {} go install {}")
+		run_with_progress(
+			"Golang packages",
+			"cat go.txt", -- Command to list packages from go.txt
+			"go install {package}" -- Command to install Go packages
+		)
 	end
 end
 
