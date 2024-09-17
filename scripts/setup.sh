@@ -70,7 +70,7 @@ setup_sync_packages() {
   fi
 
   echo "Loading the Launch Agent..."
-  launchctl load "$PLIST_DEST"
+  launchctl enable "$PLIST_DEST"
 
   if launchctl list | grep -q "com.kazi.syncinstalledpackages"; then
     echo "Launch Agent com.kazi.syncinstalledpackages is successfully loaded and running."
