@@ -85,7 +85,6 @@ save_yarn_packages
 save_npm_packages
 save_gem_packages
 save_pip3_packages
-save_sdkman_packages
 save_golang_packages
 
 echo "All installed packages have been saved to the corresponding files."

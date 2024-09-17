@@ -19,7 +19,7 @@ local package_managers = {
 	},
 	Cargo = {
 		exists_command = "cargo",
-		install_command = "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh",
+		install_command = "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y",
 		packages_file = "cargo.txt",
 		install_packages_command = "cat cargo.txt | xargs cargo install",
 	},
@@ -67,7 +67,7 @@ local function install_package_manager(manager_name, manager)
 	if not command_exists(manager.exists_command) then
 		-- Install the package manager using Gum spinner
 		local install_command = string.format(
-			'gum spin --title "Installing %s..." --show-output -- %s',
+			'gum spin --spinner moon --title "Installing %s..." --show-output -- %s',
 			manager_name,
 			manager.install_command
 		)
@@ -84,7 +84,7 @@ local function install_package_manager(manager_name, manager)
 		f:close()
 		-- Use Gum spinner to show package installation progress
 		local install_command = string.format(
-			'gum spin --title "Installing %s packages..." --show-output -- "%s"',
+			'gum spin --title --spinner moon "Installing %s packages..." --show-output -- "%s"',
 			manager_name,
 			install_packages_command
 		)
