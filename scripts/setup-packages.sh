@@ -32,8 +32,7 @@ install_lua
 install_gum
 
 run_lua_script() {
-  echo "Running the Lua script to install package managers and packages..."
-  lua setup-packages.lua
+  gum spin --spinner moon --title="Running the Lua script to install package managers and packages..." -- lua setup-packages.lua
   LUA_EXIT_CODE=$?
 
   if [ $LUA_EXIT_CODE -eq 0 ]; then
@@ -48,8 +47,7 @@ run_lua_script() {
 # Function to prompt user to restart shell
 prompt_restart_shell() {
   if gum confirm "Do you want to restart your shell now?"; then
-    echo "Restarting the shell..."
-    exec $SHELL
+    gum spin --spinner moon --title="Restarting the shell..." -- exec $SHELL
   else
     echo "Shell restart skipped. Please restart your shell manually if needed."
   fi
