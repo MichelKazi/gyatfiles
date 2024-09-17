@@ -13,50 +13,31 @@ install_homebrew() {
   fi
 }
 
-install_lua() {
-  if ! command_exists lua; then
-    echo "Installing Lua"
-    brew install lua
-  fi
-}
+install_tools() {
+  echo "Installing setup tools"
 
-install_gum() {
   if ! command_exists gum; then
     echo "Installing Gum"
     brew install gum
+  else
+    echo "gum is already installed"
+  fi
+
+  if ! command_exists lua; then
+    gum spin --spinner moon --title="Installing lua" -- brew install lua
+  else
+    echo "Lua is already installed"
+  fi
+
+  if ! command_exists stow; then
+    gum spin --spinner moon --title="Installing stow" -- brew install stow
+  else
+    echo "stow is already installed"
   fi
 }
 
+./stow-packages.sh
 install_homebrew
-install_lua
-install_gum
+install_tools
 
-run_lua_script() {
-  gum spin --spinner moon --title="Running the Lua script to install package managers and packages..." -- lua setup-packages.lua
-  LUA_EXIT_CODE=$?
-
-  if [ $LUA_EXIT_CODE -eq 0 ]; then
-    echo "Lua script ran successfully!"
-    return 0
-  else
-    echo "Lua script failed with exit code $LUA_EXIT_CODE."
-    return 1
-  fi
-}
-
-# Function to prompt user to restart shell
-prompt_restart_shell() {
-  if gum confirm "Do you want to restart your shell now?"; then
-    gum spin --spinner moon --title="Restarting the shell..." -- exec $SHELL
-  else
-    echo "Shell restart skipped. Please restart your shell manually if needed."
-  fi
-}
-
-# Run the Lua script
-if run_lua_script; then
-  # If the Lua script succeeded, prompt for shell restart
-  prompt_restart_shell
-else
-  echo "There was an issue running the Lua script. Please check the output for errors."
-fi
+gum spin --spinner moon --title="Running the Lua script to install package managers and packages..." -- lua setup-packages.lua
