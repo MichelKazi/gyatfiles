@@ -79,7 +79,7 @@ local function install_package_manager(manager_name, manager)
 	if f then
 		f:close()
 		local install_command = string.format(
-			'gum spin --title --spinner moon --title "Installing %s packages..." --show-output -- "%s"',
+			'gum spin --spinner moon --title "Installing %s packages..." --show-output -- "%s"',
 			manager_name,
 			install_packages_command
 		)
