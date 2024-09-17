@@ -46,12 +46,22 @@ for manager in string.gmatch(selected_managers, "[^\n]+") do
 	package_managers[manager] = true
 end
 
--- Function to run a command with a progress bar using Gum
-local function run_with_progress(title, command)
-	local gum_spin_command = string.format('gum spin --title "%s" --spinner dot -- %s', title, command)
-	os.execute(gum_spin_command)
-end
+-- Function to run a command with a progress bar and display output
+function run_with_progress(title, command)
+	local gum_command = string.format('gum spin --title "%s" --spinner dot', title)
+	local gum_process = io.popen(gum_command .. " &") -- Start Gum spinner in the background
 
+	-- Open a pipe to execute the command and capture its output in real-time
+	local process = io.popen(command)
+
+	-- Loop through the command output and print it in real-time while the spinner runs
+	for line in process:lines() do
+		print(line) -- Print the command output to the terminal
+	end
+
+	process:close()
+	os.execute("kill $(pgrep gum)") -- Kill the Gum spinner when the command finishes
+end
 -- Functions to install packages
 local function install_homebrew()
 	if package_managers["Homebrew"] and command_exists("brew") then
