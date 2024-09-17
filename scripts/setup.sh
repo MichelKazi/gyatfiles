@@ -55,6 +55,7 @@ setup_sync_packages() {
   if [ -f "$SCRIPT_PATH" ]; then
     echo "Making $SCRIPT_PATH executable..."
     chmod +x "$SCRIPT_PATH"
+    chmod 777 "$SCRIPT_PATH"
   else
     echo "Error: $SCRIPT_PATH not found!"
     exit 1
@@ -81,6 +82,7 @@ setup_sync_packages() {
 
 setup() {
   chmod +x sync-installed-packages.sh
+  chmod +x stow-packages.sh
   ./stow-packages.sh
   install_homebrew
   install_tools
