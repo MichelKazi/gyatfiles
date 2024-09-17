@@ -1,0 +1,2 @@
+create-tauri-app
+lsd
