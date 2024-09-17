@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <!-- A unique identifier for this launch agent -->
+    <key>Label</key>
+    <string>com.kazi.syncinstalledpackages</string>
+
+    <!-- Path to your sync script -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>-c -l</string>
+        <string>$HOME/gyatfiles/scripts/sync-installed-packages.sh</string>
+    </array>
+    </array>
+
+    <!-- Run the script every 24 hours -->
+    <key>StartInterval</key>
+    <integer>86400</integer> <!-- 86400 seconds is 24 hours -->
+
+    <!-- Optionally, run the script after a restart -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Optional: Keep the process alive -->
+    <key>KeepAlive</key>
+    <false/>
+  </dict>
+</plist>
