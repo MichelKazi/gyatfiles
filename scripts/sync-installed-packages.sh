@@ -60,21 +60,11 @@ save_pip3_packages() {
   fi
 }
 
-save_golang_packages() {
-  if command_exists go; then
-    echo "Saving installed Golang packages to go.txt..."
-    go list -m -f '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}' all >"$SCRIPT_DIR/packages/go.txt"
-  else
-    echo "Golang not found, skipping."
-  fi
-}
-
 save_brew_packages
 save_cargo_packages
 save_yarn_packages
 save_npm_packages
 save_gem_packages
 save_pip3_packages
-save_golang_packages
 
 echo "All installed packages have been saved to the corresponding files."
