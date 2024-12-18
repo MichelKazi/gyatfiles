@@ -45,6 +45,7 @@ local swift = {
     "neovim/nvim-lspconfig",
     ---@class PluginLspOpts
     opts = {
+      inlay_hints = { enabled = false },
       servers = {
         sourcekit = {
           capabilities = {
@@ -79,4 +80,4 @@ local swift = {
   },
 }
 
-return {}
+return swift
