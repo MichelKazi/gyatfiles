@@ -1,10 +1,4 @@
--- --   "hardhackerlabs/theme-vim",
--- --   config = function()
--- --     vim.cmd.colorscheme("hardhacker")
--- --   end,
--- -- },
---
-return {
+local colorscheme = {
   -- hard contrast and black bg for gruvbox colorscheme:
   {
     "ellisonleao/gruvbox.nvim",
@@ -33,49 +27,25 @@ return {
     },
   },
   {
-    "navarasu/onedark.nvim",
-    opts = {
-      style = "deep",
-      transparent = true,
-    },
-  },
-  {
-    "0xstepit/flow.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {},
-    config = function()
-      require("flow").setup({
-        transparent = true, -- Set transparent background.
-        fluo_color = "pink", --  Fluo color: pink, yellow, orange, or green.
-        mode = "bright", -- Intensity of the palette: normal, bright, desaturate, or dark. Notice that dark is ugly!
-        aggressive_spell = false, -- Display colors for spell check.
-      })
-    end,
-  },
-  {
-    "zootedb0t/citruszest.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require("citruszest").setup({
-        option = {
-          transparent = true,
-          bold = true,
-          italic = true,
-        },
-      })
-    end,
-  },
-  {
     "scottmckendry/cyberdream.nvim",
     lazy = false,
     priority = 1000,
+    opts = {
+      transparent = true,
+      theme = {
+        highlights = {
+          Visual = { fg = "#000000", bg = "#ff3895", italic = true, bold = true },
+        },
+      },
+    },
   },
   {
     "LazyVim/LazyVim",
-    opts = {
-      colorscheme = "gruvbox",
-    },
+    opts = function(_, opts)
+      opts.colorscheme = "cyberdream"
+      return opts
+    end,
   },
 }
+
+return colorscheme

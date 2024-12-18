@@ -76,10 +76,11 @@ local ruby_config = {
         ruby_lsp = {
           mason = false,
           cmd = { vim.fn.expand("~/.rbenv/shims/ruby-lsp") },
+          filetypes = { "ruby" },
         },
         sorbet = {
           cmd = { "srb", "tc", "--lsp" },
-          filetypes = { "ruby" },
+          filetypes = { "ruby", "haml" },
           root_dir = function(fname)
             return sorbet_root_pattern(fname)
           end,

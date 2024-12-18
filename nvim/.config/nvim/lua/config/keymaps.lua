@@ -56,29 +56,21 @@ vim.api.nvim_create_user_command("CopyGithubUrl", function()
     return output
   end
 
-  local notify = require("notify")
+  local notify = require("snacks.notify")
   local repo = get_gh_repo_url()
   local filepath = get_relative_path_from_git_root()
   local url = repo .. "/blob/main/" .. filepath
   if repo and filepath then
     vim.fn.setreg("+", url)
   else
-    notify("Failed to retrieve github url", "error")
+    notify.error("Failed to retrieve github url")
   end
   notify(url .. " copied to clipboard")
 end, { desc = "Copy file from github url" })
 
 map("n", "<esc><esc>", function()
-  require("notify").dismiss({ silent = true, pending = true })
+  vim.cmd("noh")
 end, { desc = "Redraw / clear hlsearch / diff update" })
-
-map("n", "<C-n>", function()
-  require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
-end, { desc = "Toggle tree (cwd)" })
-
-map("n", "<C-e>", function()
-  require("neo-tree.command").execute({ toggle = true, dir = Util.root() })
-end, { desc = "Toggle tree (cwd)" })
 
 -- Cut (delete) and copy to system clipboard
 map("n", "<leader>d", '"+d')
@@ -132,8 +124,25 @@ map("n", "<C-l>", function()
   splits.move_cursor_right()
 end)
 
-map("n", "<leader>md", function()
+map("n", "<leader>Dt", function()
   local buf = vim.api.nvim_get_current_buf()
   local enabled = vim.diagnostic.is_enabled()
   vim.diagnostic.enable(not enabled, { bufnr = buf })
+end, { desc = "Toggle diagnostics" })
+
+local function yank_diagnostic_error()
+  vim.diagnostic.open_float()
+  vim.diagnostic.open_float()
+  local win_id = vim.fn.win_getid() -- get the window ID of the floating window
+  vim.cmd("normal! j") -- move down one row
+  vim.cmd("normal! VG") -- select everything from that row down
+  vim.cmd("normal! y") -- yank selected text
+  vim.api.nvim_win_close(win_id, true) -- close the floating window by its ID
+end
+
+map("n", "<leader>e", yank_diagnostic_error, { noremap = true, silent = true, desc = "Copy error" })
+
+map("n", "<C-n>", function()
+  local oil = require("oil")
+  oil.toggle_float(nil)
 end)
