@@ -32,17 +32,22 @@ local colorscheme = {
     priority = 1000,
     opts = {
       transparent = true,
-      theme = {
-        highlights = {
-          Visual = { fg = "#000000", bg = "#ff3895", italic = true, bold = true },
-        },
+      highlights = {
+        Visual = { fg = "#000000", bg = "#ff3895", italic = true, bold = true },
       },
     },
   },
   {
+    "srcery-colors/srcery-vim",
+  },
+  {
     "LazyVim/LazyVim",
     opts = function(_, opts)
-      opts.colorscheme = "cyberdream"
+      opts.colorscheme = "srcery"
+
+      vim.api.nvim_set_hl(0, "Operator", { fg = "#FF0000" })
+      vim.api.nvim_set_hl(0, "Delimiter", { fg = "#FF0000" })
+      vim.api.nvim_set_hl(0, "Special", { fg = "#FF0000" })
       return opts
     end,
   },

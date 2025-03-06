@@ -143,6 +143,5 @@ end
 map("n", "<leader>e", yank_diagnostic_error, { noremap = true, silent = true, desc = "Copy error" })
 
 map("n", "<C-n>", function()
-  local oil = require("oil")
-  oil.toggle_float(nil)
-end)
+  Snacks.picker.explorer({ follow_file = true })
+end, { desc = "File explorer" })

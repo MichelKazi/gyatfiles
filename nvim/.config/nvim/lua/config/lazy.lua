@@ -6,7 +6,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 
-vim.api.nvim_set_hl(0, "DashboardHeader", { fg = "#FC5200" })
+-- vim.api.nvim_set_hl(0, "DashboardHeader", { fg = "#FC5200" })
 
 require("lazy").setup({
   spec = {
