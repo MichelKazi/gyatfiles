@@ -1,6 +1,5 @@
 local Path = require("plenary.path")
 local Job = require("plenary.job")
-local Utils = {}
 
 local function file_exists(name)
   local f = io.open(name, "r")
@@ -70,6 +69,28 @@ vim.api.nvim_create_user_command("CopyGithubUrl", function()
   notify(url .. " copied to clipboard")
 end, { desc = "Copy file from github url" })
 
-Utils.file_exists = file_exists:
+Utils = {
+  file_exists = file_exists,
+  set_keymaps = function(mappings, desc_prefix)
+    return vim.tbl_map(function(mapping)
+      local lhs = mapping[1]
+      local rhs = mapping[2]
+      local desc = desc_prefix and desc_prefix .. ": " .. mapping[3] or mapping[3]
+      local opts = mapping[4]
+      local mode = opts and opts.mode or "n"
+      local expr = opts and opts.expr or false
+      local remap = opts and opts.remap or false
 
-return Utils
+      return {
+        lhs,
+        rhs,
+        mode = mode,
+        noremap = true,
+        unique = true,
+        desc = desc,
+        expr = expr,
+        remap = remap,
+      }
+    end, mappings)
+  end,
+}

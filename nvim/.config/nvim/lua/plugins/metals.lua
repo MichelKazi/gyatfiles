@@ -1,5 +1,6 @@
 local Util = require("lazyvim.util")
 local map = Util.safe_keymap_set
+local picker = require("snacks.picker")
 
 local function find_file_in_dir(dir, title)
   local builtin = require("telescope.builtin")
@@ -166,8 +167,11 @@ return {
       disableColorOutput = false,
     }
 
-    metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities()
-    -- metals_config.capabilities = require("blink-cmp").get_lsp_capabilities()
+    if package.loaded["blink.cmp"] then
+      metals_config.capabilities = require("blink-cmp").get_lsp_capabilities()
+    else
+      metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities()
+    end
 
     metals_config.on_attach = function(client, bufnr)
       local telescope = require("telescope")
@@ -186,17 +190,17 @@ return {
         telescope.extensions.metals.commands()
       end, { desc = "Metals commands" })
 
-      map("n", "gD", vim.lsp.buf.definition, { desc = "Go to definition" })
+      map("n", "gD", picker.lsp_definitions, { desc = "Go to definition" })
 
       map("n", "K", vim.lsp.buf.hover, { desc = "Show hover" })
 
-      map("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implementation" })
+      map("n", "gi", picker.lsp_implementations, { desc = "Go to implementation" })
 
-      map("n", "gr", vim.lsp.buf.references, { desc = "Go to references" })
+      map("n", "gr", picker.lsp_references, { desc = "Go to references" })
 
-      map("n", "gds", vim.lsp.buf.document_symbol, { desc = "Go to document symbol" })
+      map("n", "gds", picker.lsp_symbols, { desc = "Go to document symbol" })
 
-      map("n", "gws", vim.lsp.buf.workspace_symbol, { desc = "Go to workspace symbol" })
+      map("n", "gws", picker.lsp_workspace_symbols, { desc = "Go to workspace symbol" })
 
       map("n", "<leader>cl", vim.lsp.codelens.run, { desc = "Run codelens" })
 
@@ -297,7 +301,6 @@ return {
     vim.api.nvim_create_autocmd("FileType", {
       pattern = { "scala", "sbt", "thrift" },
       callback = function()
-        vim.b.autoformat = false
         metals.initialize_or_attach(metals_config)
       end,
       group = nvim_metals_group,
