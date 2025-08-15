@@ -1,4 +1,5 @@
-local model = "claude-3.5-sonnet"
+local model = "claude-3.7-sonnet-thought"
+-- local model = "gemini-2.5-pro"
 local prompts = {
   -- Code related prompts
   Explain = "Please explain how the following code works.",
@@ -44,7 +45,7 @@ return {
       prompts = prompts,
       model = model,
       auto_follow_cursor = true,
-      insert_at_end = true,
+      insert_at_end = false,
       selection = function(source)
         local select = require("CopilotChat.select")
         return select.buffer(source)
@@ -83,84 +84,83 @@ return {
         },
       },
     },
-    keys = {
-      -- Open Copilot Chat
-      { "<leader>aa", "<cmd>CopilotChatOpen<cr>", desc = "CopilotChat" },
-      -- Show prompts actions with telescope
-      {
-        "<leader>ap",
-        function()
-          local actions = require("CopilotChat.actions")
-          require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
-        end,
-        desc = "CopilotChat - Prompt actions",
-      },
-      {
-        "<leader>ap",
-        ":lua require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions({selection = require('CopilotChat.select').visual}))<CR>",
-        mode = "x",
-        desc = "CopilotChat - Prompt actions",
-      },
-      -- Code related commands
-      { "<leader>ae", "<cmd>CopilotChatExplain<cr>", desc = "CopilotChat - Explain code" },
-      { "<leader>at", "<cmd>CopilotChatTests<cr>", desc = "CopilotChat - Generate tests" },
-      { "<leader>ar", "<cmd>CopilotChatReview<cr>", desc = "CopilotChat - Review code" },
-      { "<leader>aR", "<cmd>CopilotChatRefactor<cr>", desc = "CopilotChat - Refactor code" },
-      { "<leader>an", "<cmd>CopilotChatBetterNamings<cr>", desc = "CopilotChat - Better Naming" },
-      -- Chat with Copilot in visual mode
-      {
-        "<leader>av",
-        ":CopilotChatVisual",
-        mode = "x",
-        desc = "CopilotChat - Open in vertical split",
-      },
-      {
-        "<leader>ax",
-        ":CopilotChatInline<cr>",
-        mode = "x",
-        desc = "CopilotChat - Inline chat",
-      },
-      -- Custom input for CopilotChat
-      {
-        "<leader>ai",
-        function()
-          local input = vim.fn.input("Ask Copilot: ")
-          if input ~= "" then
-            vim.cmd("CopilotChat " .. input)
-          end
-        end,
-        desc = "CopilotChat - Ask input",
-      },
-      -- Generate commit message based on the git diff
-      {
-        "<leader>am",
-        "<cmd>CopilotChatCommit<cr>",
-        desc = "CopilotChat - Generate commit message for all changes",
-      },
-      -- Quick chat with Copilot
-      {
-        "<leader>aq",
-        function()
-          local input = vim.fn.input("Quick Chat: ")
-          if input ~= "" then
-            vim.cmd("CopilotChatBuffer " .. input)
-          end
-        end,
-        desc = "CopilotChat - Quick chat",
-      },
-      -- Debug
-      { "<leader>ad", "<cmd>CopilotChatDebugInfo<cr>", desc = "CopilotChat - Debug Info" },
-      -- Fix the issue with diagnostic
-      { "<leader>af", "<cmd>CopilotChatFixDiagnostic<cr>", desc = "CopilotChat - Fix Diagnostic" },
-      -- Clear buffer and chat history
-      { "<leader>al", "<cmd>CopilotChatReset<cr>", desc = "CopilotChat - Clear buffer and chat history" },
-      -- Toggle Copilot Chat Vsplit
-      { "<leader>av", "<cmd>CopilotChatToggle<cr>", desc = "CopilotChat - Toggle" },
-      -- Copilot Chat Models
-      { "<leader>a?", "<cmd>CopilotChatModels<cr>", desc = "CopilotChat - Select Models" },
-      -- Copilot Chat Agents
-      { "<leader>aA", "<cmd>CopilotChatAgents<cr>", desc = "CopilotChat - Select Agents" },
-    },
+    keys = function()
+      local chat = require("CopilotChat")
+      return {
+        -- Open Copilot Chat
+        { "<leader>aa", "<cmd>CopilotChatOpen<cr>", desc = "CopilotChat" },
+        -- Show prompts actions with telescope
+        {
+          "<leader>ap",
+          function()
+            chat.select_prompt()
+          end,
+          desc = "CopilotChat - Prompt actions",
+        },
+        {
+          "<leader>ap",
+          ":lua require('CopilotChat').select_prompt({selection = require('CopilotChat.select').visual})<CR>",
+          desc = "CopilotChat - Prompt actions",
+        },
+        -- Code related commands
+        { "<leader>ae", "<cmd>CopilotChatExplain<cr>", desc = "CopilotChat - Explain code" },
+        { "<leader>at", "<cmd>CopilotChatTests<cr>", desc = "CopilotChat - Generate tests" },
+        { "<leader>ar", "<cmd>CopilotChatReview<cr>", desc = "CopilotChat - Review code" },
+        { "<leader>aR", "<cmd>CopilotChatRefactor<cr>", desc = "CopilotChat - Refactor code" },
+        { "<leader>an", "<cmd>CopilotChatBetterNamings<cr>", desc = "CopilotChat - Better Naming" },
+        -- Chat with Copilot in visual mode
+        {
+          "<leader>av",
+          ":CopilotChatVisual",
+          mode = "x",
+          desc = "CopilotChat - Open in vertical split",
+        },
+        {
+          "<leader>ax",
+          ":CopilotChatInline<cr>",
+          mode = "x",
+          desc = "CopilotChat - Inline chat",
+        },
+        -- Custom input for CopilotChat
+        {
+          "<leader>ai",
+          function()
+            local input = vim.fn.input("Ask Copilot: ")
+            if input ~= "" then
+              vim.cmd("CopilotChat " .. input)
+            end
+          end,
+          desc = "CopilotChat - Ask input",
+        },
+        -- Generate commit message based on the git diff
+        {
+          "<leader>am",
+          "<cmd>CopilotChatCommit<cr>",
+          desc = "CopilotChat - Generate commit message for all changes",
+        },
+        -- Quick chat with Copilot
+        {
+          "<leader>aq",
+          function()
+            local input = vim.fn.input("Quick Chat: ")
+            if input ~= "" then
+              vim.cmd("CopilotChatBuffer " .. input)
+            end
+          end,
+          desc = "CopilotChat - Quick chat",
+        },
+        -- Debug
+        { "<leader>ad", "<cmd>CopilotChatDebugInfo<cr>", desc = "CopilotChat - Debug Info" },
+        -- Fix the issue with diagnostic
+        { "<leader>af", "<cmd>CopilotChatFixDiagnostic<cr>", desc = "CopilotChat - Fix Diagnostic" },
+        -- Clear buffer and chat history
+        { "<leader>al", "<cmd>CopilotChatReset<cr>", desc = "CopilotChat - Clear buffer and chat history" },
+        -- Copilot Chat Models
+        { "<leader>a?", "<cmd>CopilotChatModels<cr>", desc = "CopilotChat - Select Models" },
+        -- Copilot Chat Agents
+        { "<leader>aA", "<cmd>CopilotChatAgents<cr>", desc = "CopilotChat - Select Agents" },
+      }
+    end,
     config = function(_, opts)
       local chat = require("CopilotChat")
       chat.setup(opts)

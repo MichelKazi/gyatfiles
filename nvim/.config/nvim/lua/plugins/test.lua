@@ -1,4 +1,4 @@
-return {
+local neotest_config = {
   {
     "nvim-neotest/neotest",
     dependencies = {
@@ -31,3 +31,4 @@ return {
     end,
   },
 }
+return {}

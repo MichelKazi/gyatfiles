@@ -58,9 +58,13 @@ vim.api.nvim_create_user_command("CopyGithubUrl", function()
 
   local notify = require("snacks.notify")
   local repo = get_gh_repo_url()
+  local current_line = vim.fn.line(".")
   local filepath = get_relative_path_from_git_root()
   local url = repo .. "/blob/main/" .. filepath
   if repo and filepath then
+    if vim.v.event.mapping == "<leader>gY" then
+      url = url .. "#L" .. current_line
+    end
     vim.fn.setreg("+", url)
   else
     notify.error("Failed to retrieve github url")
@@ -89,7 +93,12 @@ map("n", "<leader>Y", '"+Y')
 map("n", "<C-y>", function()
   vim.cmd("let @+ = expand('%p')")
 end)
+
 map("n", "<leader>gy", function()
+  vim.cmd("CopyGithubUrl")
+end)
+
+map("n", "<leader>gY", function()
   vim.cmd("CopyGithubUrl")
 end)
 --
@@ -145,3 +154,28 @@ map("n", "<leader>e", yank_diagnostic_error, { noremap = true, silent = true, de
 map("n", "<C-n>", function()
   Snacks.picker.explorer({ follow_file = true })
 end, { desc = "File explorer" })
+
+map("n", "<C-a>", function()
+  require("dial.map").manipulate("increment", "normal")
+end)
+map("n", "<C-x>", function()
+  require("dial.map").manipulate("decrement", "normal")
+end)
+map("n", "g<C-a>", function()
+  require("dial.map").manipulate("increment", "gnormal")
+end)
+map("n", "g<C-x>", function()
+  require("dial.map").manipulate("decrement", "gnormal")
+end)
+map("v", "<C-a>", function()
+  require("dial.map").manipulate("increment", "visual")
+end)
+map("v", "<C-x>", function()
+  require("dial.map").manipulate("decrement", "visual")
+end)
+map("v", "g<C-a>", function()
+  require("dial.map").manipulate("increment", "gvisual")
+end)
+map("v", "g<C-x>", function()
+  require("dial.map").manipulate("decrement", "gvisual")
+end)

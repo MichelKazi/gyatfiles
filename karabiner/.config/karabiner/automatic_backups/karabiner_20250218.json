@@ -1,5 +1,4 @@
 {
-    "global": { "show_in_menu_bar": false },
     "profiles": [
         {
             "complex_modifications": {
@@ -21,7 +20,6 @@
                     },
                     {
                         "description": "Post alt if tab is held down",
-                        "enabled": false,
                         "manipulators": [
                             {
                                 "from": {

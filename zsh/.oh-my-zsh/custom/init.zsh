@@ -1,7 +1,9 @@
+if [ -z "$TMUX" ]; then
+  tmux new -A -s BASE
+fi
+
 export PATH=${PATH}:`go env GOPATH`/bin
 export PATH=${PATH}:~/bin
-source ~/.zsh_env
-source ~/.strava_shell_helpers
 
 eval "$(starship init zsh)"
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
