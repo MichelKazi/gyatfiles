@@ -1,0 +1,3 @@
+font-family = FiraCode Nerd Font Mono
+theme = srcery
+keybind=super+shift+plus=increase_font_size:1

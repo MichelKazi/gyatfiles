@@ -2,13 +2,6 @@ local Util = require("lazyvim.util")
 local map = Util.safe_keymap_set
 local picker = require("snacks.picker")
 
-local function find_file_in_dir(dir, title)
-  local builtin = require("telescope.builtin")
-  local filename = vim.fn.expand("%:t:r")
-  local search_term = dir .. filename
-  builtin.find_files({ search_file = search_term, prompt_title = title })
-end
-
 ---@type table<number, {token:lsp.ProgressToken, msg:string, done:boolean}[]>
 local progress = vim.defaulttable()
 vim.api.nvim_create_autocmd("LspProgress", {
@@ -41,7 +34,7 @@ vim.api.nvim_create_autocmd("LspProgress", {
       return table.insert(msg, v.msg) or not v.done
     end, p)
 
-    local spinner = { "🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘", "🌑", "🌒" }
+    local spinner = { "🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘", "🌑" }
     vim.notify(table.concat(msg, "\n"), "info", {
       id = "lsp_progress",
       title = client.name,
@@ -77,7 +70,7 @@ return {
 
         -- Command to colorize the current buffer
         vim.api.nvim_create_user_command("BaleiaColorize", function()
-          vim.g.baleia.once(vim.api.nvim_get_current_buf())
+          vim.g.baleia.once(vim.api.nvim_get_current_buf()) ---@diagnostic disable-line
         end, { bang = true })
 
         vim.api.nvim_create_autocmd("FileType", {
@@ -85,7 +78,7 @@ return {
           pattern = "dap-repl",
           group = vim.api.nvim_create_augroup("auto_colorize", { clear = true }),
           callback = function()
-            vim.g.baleia.automatically(vim.api.nvim_get_current_buf())
+            vim.g.baleia.automatically(vim.api.nvim_get_current_buf()) ---@diagnostic disable-line
           end,
         })
 
@@ -97,7 +90,6 @@ return {
       "mfussenegger/nvim-dap",
       dependencies = {
         "rcarriga/nvim-dap-ui",
-        "nvim-neotest/nvim-nio",
       },
       config = function(self, opts)
         -- Debug settings if you're using nvim-dap
@@ -109,12 +101,13 @@ return {
           dapui.open()
         end
         dap.listeners.before.event_terminated.dapui_config = function()
-          dapui.close()
+          -- Keep UI open after termination
+          -- dapui.close()
         end
         dap.listeners.before.event_exited.dapui_config = function()
-          dapui.close()
+          -- Keep UI open after exit
+          -- dapui.close()
         end
-
         dap.configurations.scala = {
           {
             type = "scala",
@@ -150,6 +143,7 @@ return {
       ammoniteJvmProperties = {
         " --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED",
       },
+      serverProperties = { "-Xmx3G" },
       -- defaultBspToBuildTool = true,
     }
 
@@ -175,16 +169,20 @@ return {
 
     metals_config.on_attach = function(client, bufnr)
       local telescope = require("telescope")
+      require("metals").setup_dap()
+      local dap = require("dap")
 
       map("n", "<leader>mt", function()
-        find_file_in_dir("test", "Find Related Spec")
-      end, { desc = "Find Related Spec" })
-
-      map("n", "<leader>mm", function()
-        find_file_in_dir("main", "Find Related Production File")
-      end, { desc = "Find Production Files" })
-
-      require("metals").setup_dap()
+        dap.run({
+          type = "scala",
+          request = "launch",
+          name = "RunOrTest",
+          metals = {
+            runType = "runOrTestFile",
+            jvmOptions = { "-J--illegal-access=permit" },
+          },
+        })
+      end, { desc = "Run/Test current file" })
 
       map("n", "<leader>me", function()
         telescope.extensions.metals.commands()
@@ -210,7 +208,10 @@ return {
 
       map("n", "--", vim.lsp.buf.format, { desc = "Format with scalaFmt" })
 
-      map("n", "<leader>mf", vim.lsp.buf.format, { desc = "Format with scalaFmt" })
+      map("n", "<leader>mf", function()
+        vim.lsp.buf.format()
+        require("metals").run_scalafix()
+      end, { desc = "Format with scalaFmt" })
 
       map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
 
@@ -299,7 +300,7 @@ return {
     local metals = require("metals")
     local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
     vim.api.nvim_create_autocmd("FileType", {
-      pattern = { "scala", "sbt", "thrift" },
+      pattern = { "scala", "sbt" },
       callback = function()
         metals.initialize_or_attach(metals_config)
       end,

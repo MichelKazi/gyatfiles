@@ -1,39 +1,56 @@
 local wezterm = require("wezterm")
-local mux = wezterm.mux
-
-local custom = wezterm.color.get_builtin_schemes()["Catppuccin Mocha"]
-custom.background = "#000000"
-custom.tab_bar.background = "#040404"
-custom.tab_bar.inactive_tab.bg_color = "#0f0f0f"
-custom.tab_bar.new_tab.bg_color = "#080808"
-
 local c = wezterm.config_builder()
 
-c.color_scheme = "Catppuccin Mocha"
-c.color_schemes = {
-	["Catppuccin Mocha"] = {
-		foreground = "#eee9fc",
-		background = "#000000",
-		cursor_bg = "#eee9fc",
-		cursor_border = "#eee9fc",
-		cursor_fg = "#eee9fc",
-		selection_bg = "#3f3951",
-		selection_fg = "#eee9fc",
+local rosepine = wezterm.plugin.require("https://github.com/neapsix/wezterm").main
+local cyberdream = require("cyberdream")
 
-		ansi = { "#282433", "#e965a5", "#b1f2a7", "#ebde76", "#b1baf4", "#e192ef", "#b3f4f3", "#eee9fc" },
-		brights = { "#3f3951", "#e965a5", "#b1f2a7", "#ebde76", "#b1baf4", "#e192ef", "#b3f4f3", "#eee9fc" },
+local catppuccin = {
+	color_scheme = "Catppuccin Mocha",
+	color_schemes = {
+		["Catppuccin Mocha"] = {
+			foreground = "#eee9fc",
+			background = "#000000",
+			cursor_bg = "#573d7a",
+			cursor_border = "#eee9fc",
+			cursor_fg = "#573d7a",
+			selection_bg = "#3f3951",
+			selection_fg = "#eee9fc",
+
+			ansi = { "#282433", "#e965a5", "#b1f2a7", "#ebde76", "#b1baf4", "#e192ef", "#b3f4f3", "#eee9fc" },
+			brights = { "#3f3951", "#e965a5", "#b1f2a7", "#ebde76", "#b1baf4", "#e192ef", "#b3f4f3", "#eee9fc" },
+		},
 	},
 }
+
+local cyberdream = {
+	-- cyberdream theme for wezterm
+	foreground = "#ffffff",
+	background = "#16181a",
+
+	cursor_bg = "#ffffff",
+	cursor_fg = "#16181a",
+	cursor_border = "#ffffff",
+
+	selection_fg = "#ffffff",
+	selection_bg = "#3c4048",
+
+	scrollbar_thumb = "#16181a",
+	split = "#16181a",
+
+	ansi = { "#16181a", "#ff6e5e", "#5eff6c", "#f1ff5e", "#5ea1ff", "#bd5eff", "#5ef1ff", "#ffffff" },
+	brights = { "#3c4048", "#ff6e5e", "#5eff6c", "#f1ff5e", "#5ea1ff", "#bd5eff", "#5ef1ff", "#ffffff" },
+	indexed = { [16] = "#ffbd5e", [17] = "#ff6e5e" },
+}
+
+c.colors = cyberdream
+
 c.font = wezterm.font("FiraCode Nerd Font")
 c.window_decorations = "TITLE | RESIZE"
-
-c.window_background_opacity = 1
-c.macos_window_background_blur = 50
+c.macos_window_background_blur = 20
+c.window_background_opacity = 0.9
 c.font_size = 11.0
 -- dpi = 192.0,
 c.leader = { key = "a", mods = "CTRL" }
-c.tab_bar_at_bottom = false
-c.use_fancy_tab_bar = false
 c.keys = {
 	{ key = "a", mods = "LEADER|CTRL", action = wezterm.action({ SendString = "\x01" }) },
 	{ key = "-", mods = "LEADER", action = wezterm.action({ SplitVertical = { domain = "CurrentPaneDomain" } }) },
@@ -80,7 +97,6 @@ c.mouse_bindings = {
 }
 
 local smart_splits = wezterm.plugin.require("https://github.com/mrjones2014/smart-splits.nvim")
-
 smart_splits.apply_to_config(c, {
 
 	direction_keys = {
@@ -92,37 +108,8 @@ smart_splits.apply_to_config(c, {
 	},
 })
 
-wezterm.plugin.require("https://github.com/nekowinston/wezterm-bar").apply_to_config(c, {
-	position = "bottom",
-	max_width = 32,
-	dividers = "slant_right", -- or "slant_left", "arrows", "rounded", false
-	indicator = {
-		leader = {
-			enabled = true,
-			off = " ",
-			on = " ",
-		},
-		mode = {
-			enabled = true,
-			names = {
-				resize_mode = "RESIZE",
-				copy_mode = "VISUAL",
-				search_mode = "SEARCH",
-			},
-		},
-	},
-	tabs = {
-		numerals = "arabic", -- or "roman"
-		pane_count = "superscript", -- or "subscript", false
-		brackets = {
-			active = { "", ":" },
-			inactive = { "", ":" },
-		},
-	},
-	clock = { -- note that this overrides the whole set_right_status
-		enabled = true,
-		format = "%H:%M", -- use https://wezfurlong.org/wezterm/config/lua/wezterm.time/Time/format.html
-	},
-})
+wezterm.plugin
+	.require("https://github.com/yriveiro/wezterm-tabs")
+	.apply_to_config(c, { tabs = { tab_bar_at_bottom = true } })
 
 return c

@@ -20,6 +20,7 @@ return {
       "shfmt",
       "rubyfmt",
       "prettierd",
+      "rubocop",
       -- "ruby-lsp",
       "solargraph",
       "rubocop",
