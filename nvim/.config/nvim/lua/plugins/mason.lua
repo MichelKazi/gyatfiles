@@ -1,7 +1,7 @@
 return {
-  "williamboman/mason.nvim",
+  "mason-org/mason.nvim",
   dependencies = {
-    "williamboman/mason-lspconfig.nvim",
+    "mason-org/mason-lspconfig.nvim",
   },
   keys = {
     { "<leader>cm", false },
@@ -23,9 +23,7 @@ return {
       "rubocop",
       -- "ruby-lsp",
       "solargraph",
-      "rubocop",
       "shellcheck",
-      "shfmt",
       "sqlls",
       "stylua",
       "terraform-ls",
