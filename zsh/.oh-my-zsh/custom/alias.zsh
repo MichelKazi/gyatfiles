@@ -38,3 +38,5 @@ alias back="cd -"
 alias nv="nvim"
 alias v="vim"
 alias readme="vim README.md"
+
+alias vpn='/Applications/Pritunl.app/Contents/Resources/pritunl-client'

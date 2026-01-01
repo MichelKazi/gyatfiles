@@ -1,20 +1,18 @@
-local colorscheme = {
-  -- hard contrast and black bg for gruvbox colorscheme:
+return {
   {
     "ellisonleao/gruvbox.nvim",
-    config = function()
-      require("gruvbox").setup({
-        contrast = "hard",
-        palette_overrides = {
-          dark0_hard = "#0E0E0F",
-        },
-      })
-    end,
+    lazy = true,
+    opts = {
+      contrast = "hard",
+      palette_overrides = {
+        dark0_hard = "#0E0E0F",
+      },
+    },
   },
   {
     "catppuccin/nvim",
     name = "catppuccin",
-    priority = 1000,
+    lazy = true,
     opts = {
       color_overrides = {
         mocha = {
@@ -23,13 +21,12 @@ local colorscheme = {
           crust = "#000000",
         },
       },
-      transparent_background = true, -- disables setting the background color.
+      transparent_background = true,
     },
   },
   {
     "scottmckendry/cyberdream.nvim",
-    lazy = false,
-    priority = 1000,
+    lazy = true,
     opts = {
       transparent = true,
       highlights = {
@@ -39,18 +36,12 @@ local colorscheme = {
   },
   {
     "srcery-colors/srcery-vim",
+    lazy = true,
   },
   {
     "LazyVim/LazyVim",
-    opts = function(_, opts)
-      opts.colorscheme = "srcery"
-
-      vim.api.nvim_set_hl(0, "Operator", { fg = "#FF0000" })
-      vim.api.nvim_set_hl(0, "Delimiter", { fg = "#FF0000" })
-      vim.api.nvim_set_hl(0, "Special", { fg = "#FF0000" })
-      return opts
-    end,
+    opts = {
+      colorscheme = "srcery",
+    },
   },
 }
-
-return colorscheme
