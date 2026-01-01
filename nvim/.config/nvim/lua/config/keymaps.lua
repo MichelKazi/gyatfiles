@@ -1,160 +1,100 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
--- Add any additional keymaps here
---
+
 local Util = require("lazyvim.util")
-
 local map = Util.safe_keymap_set
-local splits = require("smart-splits")
+local util = require("util")
 
+-- Create user command for copying GitHub URLs
 vim.api.nvim_create_user_command("CopyGithubUrl", function()
-  local Path = require("plenary.path")
-  local Job = require("plenary.job")
+  util.git.copy_github_url(false)
+end, { desc = "Copy file GitHub URL" })
 
-  local function get_git_root()
-    local result = Job:new({
-      command = "git",
-      args = { "rev-parse", "--show-toplevel" },
-      cwd = vim.fn.expand("%:p:h"),
-    }):sync()
+vim.api.nvim_create_user_command("CopyGithubUrlWithLine", function()
+  util.git.copy_github_url(true)
+end, { desc = "Copy file GitHub URL with line number" })
 
-    return result[1]
-  end
-
-  local function get_relative_path_from_git_root()
-    local git_root = get_git_root()
-    if not git_root then
-      return nil
-    end
-
-    local current_file = vim.fn.expand("%:p")
-    local relative_path = Path:new(current_file):make_relative(git_root)
-
-    return relative_path
-  end
-
-  local function is_installed(executable)
-    if vim.fn.executable(executable) == 0 then
-      vim.api.nvim_err_writeln("Error: " .. executable .. " CLI is not installed. Please install it to proceed.")
-      return false
-    end
-    return true
-  end
-
-  local function get_gh_repo_url()
-    local can_get_url = is_installed("gh") and is_installed("jq")
-    if not can_get_url then
-      return
-    end
-
-    local command = "gh repo view --json url -q \".url\" | awk '{print($0)}' | column"
-    local output = vim.fn.system(command)
-
-    -- Remove any trailing newline characters from the output
-    output = vim.fn.trim(output)
-
-    return output
-  end
-
-  local notify = require("snacks.notify")
-  local repo = get_gh_repo_url()
-  local current_line = vim.fn.line(".")
-  local filepath = get_relative_path_from_git_root()
-  local url = repo .. "/blob/main/" .. filepath
-  if repo and filepath then
-    if vim.v.event.mapping == "<leader>gY" then
-      url = url .. "#L" .. current_line
-    end
-    vim.fn.setreg("+", url)
-  else
-    notify.error("Failed to retrieve github url")
-  end
-  notify(url .. " copied to clipboard")
-end, { desc = "Copy file from github url" })
-
+-- Clear search highlight
 map("n", "<esc><esc>", function()
   vim.cmd("noh")
-end, { desc = "Redraw / clear hlsearch / diff update" })
+end, { desc = "Clear hlsearch" })
 
--- Cut (delete) and copy to system clipboard
+-- System clipboard operations
 map("n", "<leader>d", '"+d')
 map("v", "<leader>d", '"+d')
 map("n", "<leader>D", '"+D')
 
--- Change and copy to system clipboard
 map("n", "<leader>c", '"+c')
 map("v", "<leader>c", '"+c')
 map("n", "<leader>C", '"+C')
 
--- Yank to system clipboard
 map("n", "<leader>y", '"+y')
 map("v", "<leader>y", '"+y')
 map("n", "<leader>Y", '"+Y')
+
 map("n", "<C-y>", function()
   vim.cmd("let @+ = expand('%p')")
-end)
+end, { desc = "Copy file path" })
 
 map("n", "<leader>gy", function()
-  vim.cmd("CopyGithubUrl")
-end)
+  util.git.copy_github_url(false)
+end, { desc = "Copy GitHub URL" })
 
 map("n", "<leader>gY", function()
-  vim.cmd("CopyGithubUrl")
-end)
---
--- Yank to system clipboard
+  util.git.copy_github_url(true)
+end, { desc = "Copy GitHub URL with line" })
+
 map("n", "<leader>p", '"+p')
 map("v", "<leader>p", '"+p')
 map("n", "<leader>P", '"+P')
+
+-- Neotest
+map("n", "<leader>tt", function()
+  require("neotest").run.run()
+end, { desc = "Run nearest test" })
+
+map("n", "<leader>tf", function()
+  require("neotest").run.run(vim.fn.expand("%"))
+end, { desc = "Run test file" })
 
 map("n", "<leader>tl", function()
   require("neotest").run.run_last()
 end, { desc = "Run last test" })
 
-map("n", "<leader>tw", function() end, { desc = "Run and watch tests" })
+map("n", "<leader>ts", function()
+  require("neotest").summary.toggle()
+end, { desc = "Toggle test summary" })
 
-map("n", "<C-e>", function()
-  splits.start_resize_mode()
-end)
+map("n", "<leader>to", function()
+  require("neotest").output.open({ enter = true })
+end, { desc = "Open test output" })
 
-map("n", "<C-h>", function()
-  splits.move_cursor_left()
-end)
+map("n", "<leader>tp", function()
+  require("neotest").output_panel.toggle()
+end, { desc = "Toggle output panel" })
 
-map("n", "<C-j>", function()
-  splits.move_cursor_down()
-end)
+map("n", "[t", function()
+  require("neotest").jump.prev({ status = "failed" })
+end, { desc = "Previous failed test" })
 
-map("n", "<C-k>", function()
-  splits.move_cursor_up()
-end)
+map("n", "]t", function()
+  require("neotest").jump.next({ status = "failed" })
+end, { desc = "Next failed test" })
 
-map("n", "<C-l>", function()
-  splits.move_cursor_right()
-end)
+map("n", "<leader>te", function()
+  require("neotest-metals").show_error()
+end, { desc = "Show test error" })
 
-map("n", "<leader>Dt", function()
-  local buf = vim.api.nvim_get_current_buf()
-  local enabled = vim.diagnostic.is_enabled()
-  vim.diagnostic.enable(not enabled, { bufnr = buf })
-end, { desc = "Toggle diagnostics" })
+-- Diagnostics
+map("n", "<leader>Dt", util.diagnostics.toggle, { desc = "Toggle diagnostics" })
+map("n", "<leader>e", util.diagnostics.yank_error, { noremap = true, silent = true, desc = "Copy error" })
 
-local function yank_diagnostic_error()
-  vim.diagnostic.open_float()
-  vim.diagnostic.open_float()
-  local win_id = vim.fn.win_getid() -- get the window ID of the floating window
-  vim.cmd("normal! j") -- move down one row
-  vim.cmd("normal! VG") -- select everything from that row down
-  vim.cmd("normal! y") -- yank selected text
-  vim.api.nvim_win_close(win_id, true) -- close the floating window by its ID
-end
-
-map("n", "<leader>e", yank_diagnostic_error, { noremap = true, silent = true, desc = "Copy error" })
-
+-- File explorer
 map("n", "<C-n>", function()
   Snacks.picker.explorer({ follow_file = true })
 end, { desc = "File explorer" })
 
+-- dial.nvim increment/decrement
 map("n", "<C-a>", function()
   require("dial.map").manipulate("increment", "normal")
 end)

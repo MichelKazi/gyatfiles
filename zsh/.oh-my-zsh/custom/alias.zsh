@@ -38,3 +38,8 @@ alias back="cd -"
 alias nv="nvim"
 alias v="vim"
 alias readme="vim README.md"
+
+alias paas="~/strava/configuration/mesos/tools/paasage"
+alias paasage='paas'
+alias vpn='/Applications/Pritunl.app/Contents/Resources/pritunl-client'
+alias livegrep='docker run --rm docker.strava.com/strava/livegrep-cli "$@"'

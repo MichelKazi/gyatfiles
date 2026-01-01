@@ -21,6 +21,7 @@ return {
         "query",
         "regex",
         "ruby",
+        "scala",
         "tsx",
         "typescript",
         "vim",
