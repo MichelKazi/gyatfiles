@@ -17,6 +17,14 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- Disable auto line-wrapping for markdown and git commits
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown", "gitcommit" },
+  callback = function()
+    vim.opt_local.textwidth = 0
+  end,
+})
+
 -- Git commit JIRA ticket extraction
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "gitcommit",
@@ -26,13 +34,13 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Line number colors and colorscheme-specific overrides
 vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function()
-    util.highlights.set_line_number_colors()
+    util.highlights.enable_gradient_line_numbers()
     util.highlights.apply_colorscheme_overrides()
   end,
 })
 
 -- Apply immediately since colorscheme already loaded before VeryLazy
-util.highlights.set_line_number_colors()
+util.highlights.enable_gradient_line_numbers()
 util.highlights.apply_colorscheme_overrides()
 
 -- LSP progress notifications (used by Metals and other LSP servers)

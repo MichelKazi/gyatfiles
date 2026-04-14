@@ -137,11 +137,80 @@ end
 ---@class UtilHighlights
 M.highlights = {}
 
----Set custom line number colors (above/current/below)
+---Blue gradient colors for lines above (index 1 = closest to cursor, brightest)
+local blue_gradient = {
+  "#7DC4FF", -- 1 line away (brightest)
+  "#6BB5F0",
+  "#59A6E1",
+  "#4797D2",
+  "#3588C3",
+  "#2379B4",
+  "#116AA5",
+  "#005B96",
+  "#004C87", -- 9+ lines away (darkest)
+}
+
+---Red gradient colors for lines below (index 1 = closest to cursor, brightest)
+local red_gradient = {
+  "#FF7D7D", -- 1 line away (brightest)
+  "#F06B6B",
+  "#E15959",
+  "#D24747",
+  "#C33535",
+  "#B42323",
+  "#A51111",
+  "#960505",
+  "#870000", -- 9+ lines away (darkest)
+}
+
+---Set custom line number colors with gradients (above=blue, below=red)
 function M.highlights.set_line_number_colors()
-  vim.api.nvim_set_hl(0, "LineNrAbove", { fg = "#51B3EC", bold = true })
+  -- Current line number
   vim.api.nvim_set_hl(0, "LineNr", { fg = "white", bold = true })
-  vim.api.nvim_set_hl(0, "LineNrBelow", { fg = "#FB508F", bold = true })
+
+  -- Create gradient highlight groups for lines above (blue)
+  for i, color in ipairs(blue_gradient) do
+    vim.api.nvim_set_hl(0, "LineNrAbove" .. i, { fg = color, bold = true })
+  end
+
+  -- Create gradient highlight groups for lines below (red)
+  for i, color in ipairs(red_gradient) do
+    vim.api.nvim_set_hl(0, "LineNrBelow" .. i, { fg = color, bold = true })
+  end
+
+  -- Fallback groups for compatibility
+  vim.api.nvim_set_hl(0, "LineNrAbove", { fg = blue_gradient[#blue_gradient], bold = true })
+  vim.api.nvim_set_hl(0, "LineNrBelow", { fg = red_gradient[#red_gradient], bold = true })
+end
+
+---Get the highlighted line number for statuscolumn
+---@return string
+function M.highlights.gradient_line_nr()
+  local lnum = vim.v.lnum
+  local cursor_line = vim.fn.line(".")
+  local relnum = vim.v.relnum
+
+  if relnum == 0 then
+    -- Current line - show absolute number
+    return "%#LineNr#" .. lnum
+  end
+
+  -- Clamp distance to gradient range (1-9)
+  local distance = math.min(relnum, #blue_gradient)
+
+  if lnum < cursor_line then
+    -- Lines above cursor (blue gradient)
+    return "%#LineNrAbove" .. distance .. "#" .. relnum
+  else
+    -- Lines below cursor (red gradient)
+    return "%#LineNrBelow" .. distance .. "#" .. relnum
+  end
+end
+
+---Enable gradient line numbers by setting statuscolumn
+function M.highlights.enable_gradient_line_numbers()
+  M.highlights.set_line_number_colors()
+  vim.opt.statuscolumn = "%s%=%{%v:lua.require'util'.highlights.gradient_line_nr()%} "
 end
 
 ---Invert visual selection colors

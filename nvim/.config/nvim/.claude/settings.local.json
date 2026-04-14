@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(nvim:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(rbenv versions:*)",
+      "Bash(rbenv which:*)",
+      "Bash(RBENV_VERSION=3.4.5 rbenv which:*)",
+      "Bash(RBENV_VERSION=3.3.8 rbenv which:*)",
+      "Bash(gem install:*)",
+      "Bash(rbenv:*)",
+      "Bash(cat:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []
