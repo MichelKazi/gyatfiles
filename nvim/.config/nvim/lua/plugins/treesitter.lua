@@ -7,10 +7,12 @@ return {
     },
     opts = function(_, opts)
       opts.endwise = { enable = true }
-      opts.indent = { enable = true, disable = { "yaml", "ruby" } }
+      opts.indent = { enable = true, disable = { "yaml", "ruby", "gdscript" } }
       opts.ensure_installed = {
         "bash",
         "embedded_template",
+        "gdscript",
+        "godot_resource",
         "html",
         "javascript",
         "json",
