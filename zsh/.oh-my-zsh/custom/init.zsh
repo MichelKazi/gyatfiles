@@ -1,3 +1,5 @@
+[[ "$OSTYPE" == darwin* ]] || return
+
 if [ -z "$TMUX" ]; then
   tmux new -A -s BASE
 fi

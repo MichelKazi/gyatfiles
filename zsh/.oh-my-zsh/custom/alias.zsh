@@ -1,3 +1,5 @@
+[[ "$OSTYPE" == darwin* ]] || return
+
 ## Directories
 alias downloads="cd ~/Downloads"
 alias docs="cd ~/Documents"
