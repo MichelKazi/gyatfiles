@@ -1,5 +1,8 @@
 font-family = FiraCode Nerd Font Mono
-theme = srcery
+theme = Catppuccin Mocha
 keybind=super+shift+plus=increase_font_size:1
 background-blur = true
-background-opacity = 0.95
+background-opacity = 1.00
+link-url = true
+cursor-style = block
+cursor-style-blink = true

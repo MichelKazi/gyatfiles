@@ -1,0 +1,778 @@
+monitorBarOverrides = []
+monitorDwindleOverrides = []
+monitorNiriOverrides = []
+monitorOrientationOverrides = []
+version = 4
+
+[appearance]
+mode = "dark"
+
+[borders]
+enabled = true
+width = 4.0
+
+[borders.color]
+alpha = 1.0
+blue = 0.98
+green = 1.0
+red = 0.08
+
+[dwindle]
+defaultSplitRatio = 1.0
+moveToRootStable = true
+singleWindowAspectRatio = "4:3"
+smartSplit = false
+splitWidthMultiplier = 1.0
+useGlobalGaps = true
+
+[focus]
+followsMouse = false
+followsWindowToMonitor = false
+moveMouseToFocusedWindow = false
+
+[gaps]
+size = 15.0
+
+[gaps.outer]
+bottom = 15.0
+left = 15.0
+right = 15.0
+top = 15.0
+
+[general]
+animationsEnabled = true
+defaultLayoutType = "niri"
+hotkeysEnabled = true
+ipcEnabled = true
+preventSleepEnabled = false
+updateChecksEnabled = true
+
+[gestures]
+fingerCount = 3
+invertDirection = true
+scrollEnabled = true
+scrollModifierKey = "optionShift"
+scrollSensitivity = 5.0
+
+[mouseWarp]
+axis = "horizontal"
+margin = 1
+monitorOrder = []
+
+[niri]
+alwaysCenterSingleColumn = true
+centerFocusedColumn = "never"
+columnWidthPresets = [0.3333333333333333, 0.5, 0.66]
+infiniteLoop = false
+maxVisibleColumns = 2
+maxWindowsPerColumn = 3
+singleWindowAspectRatio = "4:3"
+
+[quakeTerminal]
+animationDuration = 0.2
+autoHide = false
+enabled = true
+heightPercent = 50.0
+monitorMode = "focusedWindow"
+opacity = 1.0
+position = "center"
+useCustomFrame = false
+widthPercent = 50.0
+
+[state]
+commandPaletteLastMode = "windows"
+hiddenBarIsCollapsed = true
+
+[statusBar]
+showAppNames = false
+showWorkspaceName = true
+useWorkspaceId = false
+
+[workspaceBar]
+backgroundOpacity = 0.1
+deduplicateAppIcons = false
+enabled = true
+height = 24.0
+hideEmptyWorkspaces = false
+labelFontSize = 12.0
+notchAware = true
+position = "overlappingMenuBar"
+reserveLayoutSpace = false
+showFloatingWindows = false
+showLabels = true
+windowLevel = "popup"
+xOffset = 0.0
+yOffset = 0.0
+
+[workspaceBar.accentColor]
+alpha = 1.0
+blue = -1.0
+green = -1.0
+red = -1.0
+
+[workspaceBar.textColor]
+alpha = 1.0
+blue = -1.0
+green = -1.0
+red = -1.0
+
+# ── Workspaces ──────────────────────────────────────────────────────────
+# Mapping: Aerospace named workspaces → OmniWM numbered workspaces
+# 1=Code, 2=Web, 3=Messages, 4=Notes, 5=Meetings, 6=Design, 7=Entertainment, 8=Private, 9=Scratch
+
+[[workspaces]]
+id = "22DE7061-1A4E-4530-AD7E-CD441CE4705E"
+layoutType = "niri"
+name = "1"
+displayName = "Code"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "56E2CB03-018E-4074-BD23-58D9609C4A70"
+layoutType = "niri"
+name = "2"
+displayName = "Web"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "395F6238-FD72-4B64-81C6-A0B35B7DC74C"
+layoutType = "niri"
+name = "3"
+displayName = "Messages"
+
+[workspaces.monitorAssignment]
+type = "secondary"
+
+[[workspaces]]
+id = "F4886421-6630-40FB-80AC-0C54933BC355"
+layoutType = "niri"
+name = "4"
+displayName = "Notes"
+
+[workspaces.monitorAssignment]
+type = "secondary"
+
+[[workspaces]]
+id = "BC84CD42-B734-451F-A256-05686AEE613F"
+layoutType = "niri"
+name = "5"
+displayName = "Meetings"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "61F64548-5CAF-4258-96A1-B74182F0F805"
+layoutType = "niri"
+name = "6"
+displayName = "Design"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+[[workspaces]]
+id = "5B399A8E-4706-48E3-8903-61B12F0E1098"
+layoutType = "niri"
+name = "7"
+displayName = "Entertainment"
+
+[workspaces.monitorAssignment]
+type = "secondary"
+
+[[workspaces]]
+id = "70FB8348-D6BC-4CC0-A2B4-56B08F431D92"
+layoutType = "niri"
+name = "8"
+displayName = "Private"
+
+[workspaces.monitorAssignment]
+type = "secondary"
+
+[[workspaces]]
+id = "60E2763A-CDD1-4321-B030-97A2357D154F"
+layoutType = "niri"
+name = "9"
+displayName = "Scratch"
+
+[workspaces.monitorAssignment]
+type = "main"
+
+# ── App Rules ───────────────────────────────────────────────────────────
+# Floating apps (matching Aerospace: Photo Booth, ChatGPT, Pritunl, Vial, Simulator, Finder, Docker, 1Password)
+
+[[appRules]]
+bundleId = "com.apple.PhotoBooth"
+id = "89A9DA05-D2A8-420F-A067-6A25DFC48852"
+layout = "float"
+
+[[appRules]]
+bundleId = "com.openai.chat"
+id = "DC8D275D-95AE-4D4F-946A-9FC097FE72A1"
+layout = "float"
+
+[[appRules]]
+bundleId = "com.electron.pritunl"
+id = "70D866DD-FEA3-479F-9FC6-4301943F8E95"
+layout = "float"
+
+[[appRules]]
+bundleId = "com.apple.iphonesimulator"
+id = "78292FAF-ED89-4DDD-9733-2691323DC536"
+layout = "float"
+
+[[appRules]]
+bundleId = "com.apple.finder"
+id = "3DAA3C36-0097-4295-B7FB-E84144B2CBCD"
+layout = "float"
+
+[[appRules]]
+bundleId = "com.docker.docker"
+id = "FD8B89F3-E4B7-46DC-AE56-8C06745F92BC"
+layout = "float"
+
+[[appRules]]
+bundleId = "com.1password.1password"
+id = "28A2906C-A3F3-4FD4-AA13-196337D43EDD"
+layout = "float"
+
+[[appRules]]
+bundleId = "com.agilebits.onepassword7"
+id = "27869123-76A8-4226-A892-C076F3DB0C1B"
+layout = "float"
+
+# Workspace: Code (1) — IDEs, editors, terminals
+[[appRules]]
+bundleId = "com.jetbrains.intellij"
+id = "50F7E3B6-510D-4072-8A46-37B0F3DA3955"
+assignToWorkspace = "1"
+
+[[appRules]]
+bundleId = "dev.zed.Zed"
+id = "14D5BEE1-4B4A-4D35-ACEF-CB42BF672584"
+assignToWorkspace = "1"
+
+[[appRules]]
+bundleId = "com.microsoft.VSCode"
+id = "F533DA61-8CD4-4D92-9142-B747E76C6BE9"
+assignToWorkspace = "1"
+
+[[appRules]]
+bundleId = "com.apple.dt.Xcode"
+id = "A0458FC0-8E1D-43BA-84A4-82CB16160B8F"
+assignToWorkspace = "1"
+
+[[appRules]]
+bundleId = "com.github.wez.wezterm"
+id = "DFA4F930-E5B4-494F-AA21-8FC858B64ED7"
+assignToWorkspace = "1"
+
+[[appRules]]
+bundleId = "com.mitchellh.ghostty"
+id = "4CFC67D6-878C-4C54-8164-55B9BA3B9DC0"
+assignToWorkspace = "1"
+
+# Workspace: Web (2) — browsers
+[[appRules]]
+bundleId = "com.google.Chrome"
+id = "E82AC331-7B46-4397-9AB5-19C491712BF3"
+assignToWorkspace = "2"
+
+[[appRules]]
+bundleId = "com.apple.Safari"
+id = "E6D6AF3B-135A-4686-8768-8CB3CEFE375A"
+assignToWorkspace = "2"
+
+[[appRules]]
+bundleId = "org.mozilla.firefox"
+id = "5FB73D4B-D096-442F-8A3F-4BAAA21C966D"
+assignToWorkspace = "2"
+
+[[appRules]]
+bundleId = "org.mozilla.firefoxdeveloperedition"
+id = "B1FB0D25-24DE-4306-9B06-89655178B116"
+assignToWorkspace = "2"
+
+[[appRules]]
+bundleId = "com.brave.Browser"
+id = "EF53C03B-D9DD-43D3-B21D-AEBFED0AF8C7"
+assignToWorkspace = "2"
+
+# Workspace: Messages (3) — comms
+[[appRules]]
+bundleId = "net.whatsapp.WhatsApp"
+id = "49DCEB68-4F8A-4F53-A69B-281633087C21"
+assignToWorkspace = "3"
+
+[[appRules]]
+bundleId = "com.tinyspeck.slackmacgap"
+id = "9872D0A1-86C2-41E2-9DA3-6B129305A6AC"
+assignToWorkspace = "3"
+
+[[appRules]]
+bundleId = "com.hnc.Discord"
+id = "64A4C633-4F22-4FED-8FCA-F05B8C107D1B"
+assignToWorkspace = "3"
+
+# Workspace: Notes (4)
+[[appRules]]
+bundleId = "md.obsidian"
+id = "2CC3E34C-30C6-48FC-B624-D395A6B3FBCC"
+assignToWorkspace = "4"
+
+# Workspace: Meetings (5)
+[[appRules]]
+bundleId = "com.google.Chrome.app.kjgfgldnnfobanfnkakjoadobhljjgoa"
+id = "9BCD30F1-CC5D-4E01-85E4-5573A8C4E108"
+assignToWorkspace = "5"
+
+# Workspace: Design (6)
+[[appRules]]
+bundleId = "com.figma.Desktop"
+id = "83AD2615-5E29-4CCE-979A-CE0AA6D0849A"
+assignToWorkspace = "6"
+
+# Workspace: Entertainment (7) — music
+[[appRules]]
+bundleId = "com.spotify.client"
+id = "1597AFAE-9019-4ABB-84B6-B8BDE4BCA5F6"
+assignToWorkspace = "7"
+
+[[appRules]]
+bundleId = "com.apple.Music"
+id = "14F539CE-80B2-420B-8DD3-3A15049DC83A"
+assignToWorkspace = "7"
+
+# Workspace: Private (8)
+[[appRules]]
+bundleId = "com.apple.MobileSMS"
+id = "D446BCAA-B1B3-4C9C-8D52-973EC5561406"
+assignToWorkspace = "8"
+
+# ── Hotkeys ─────────────────────────────────────────────────────────────
+# Aerospace mapping:
+#   alt+c → workspace Code (1)      alt+shift+c → move to Code (1)
+#   alt+w → workspace Web (2)       alt+shift+w → move to Web (2)
+#   alt+m → workspace Messages (3)  alt+shift+m → move to Messages (3)
+#   alt+n → workspace Notes (4)     alt+shift+n → move to Notes (4)
+#   alt+v → workspace Meetings (5)  alt+shift+v → move to Meetings (5)
+#   alt+d → workspace Design (6)    alt+shift+d → move to Design (6)
+#   alt+e → workspace Entertain (7) alt+shift+e → move to Entertain (7)
+#   alt+p → workspace Private (8)   alt+shift+p → move to Private (8)
+#   alt+x → workspace Scratch (9)   alt+shift+x → move to Scratch (9)
+
+# Switch workspace
+[[hotkeys]]
+binding = "Option+C"
+id = "switchWorkspace.0"
+
+[[hotkeys]]
+binding = "Option+W"
+id = "switchWorkspace.1"
+
+[[hotkeys]]
+binding = "Option+M"
+id = "switchWorkspace.2"
+
+[[hotkeys]]
+binding = "Option+N"
+id = "switchWorkspace.3"
+
+[[hotkeys]]
+binding = "Option+V"
+id = "switchWorkspace.4"
+
+[[hotkeys]]
+binding = "Option+D"
+id = "switchWorkspace.5"
+
+[[hotkeys]]
+binding = "Option+E"
+id = "switchWorkspace.6"
+
+[[hotkeys]]
+binding = "Option+P"
+id = "switchWorkspace.7"
+
+[[hotkeys]]
+binding = "Option+X"
+id = "switchWorkspace.8"
+
+# Move to workspace
+[[hotkeys]]
+binding = "Option+Shift+C"
+id = "moveToWorkspace.0"
+
+[[hotkeys]]
+binding = "Option+Shift+W"
+id = "moveToWorkspace.1"
+
+[[hotkeys]]
+binding = "Option+Shift+M"
+id = "moveToWorkspace.2"
+
+[[hotkeys]]
+binding = "Option+Shift+N"
+id = "moveToWorkspace.3"
+
+[[hotkeys]]
+binding = "Option+Shift+V"
+id = "moveToWorkspace.4"
+
+[[hotkeys]]
+binding = "Option+Shift+D"
+id = "moveToWorkspace.5"
+
+[[hotkeys]]
+binding = "Option+Shift+E"
+id = "moveToWorkspace.6"
+
+[[hotkeys]]
+binding = "Option+Shift+P"
+id = "moveToWorkspace.7"
+
+[[hotkeys]]
+binding = "Option+Shift+X"
+id = "moveToWorkspace.8"
+
+# Focus (alt+hjkl)
+[[hotkeys]]
+binding = "Option+H"
+id = "focus.left"
+
+[[hotkeys]]
+binding = "Option+J"
+id = "focus.down"
+
+[[hotkeys]]
+binding = "Option+K"
+id = "focus.up"
+
+[[hotkeys]]
+binding = "Option+L"
+id = "focus.right"
+
+# Move window (alt+shift+hjkl)
+[[hotkeys]]
+binding = "Option+Shift+H"
+id = "move.left"
+
+[[hotkeys]]
+binding = "Option+Shift+J"
+id = "move.down"
+
+[[hotkeys]]
+binding = "Option+Shift+K"
+id = "move.up"
+
+[[hotkeys]]
+binding = "Option+Shift+L"
+id = "move.right"
+
+# Workspace back-and-forth (alt+tab)
+[[hotkeys]]
+binding = "Option+Tab"
+id = "workspaceBackAndForth"
+
+# Focus monitor (ctrl+alt+tab → next, alt+shift+tab not available so use ctrl+cmd)
+[[hotkeys]]
+binding = "Control+Option+Tab"
+id = "focusMonitorNext"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "focusMonitorPrevious"
+
+[[hotkeys]]
+binding = "Control+Command+`"
+id = "focusMonitorLast"
+
+# Fullscreen (alt+space)
+[[hotkeys]]
+binding = "Option+Space"
+id = "toggleFullscreen"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "toggleNativeFullscreen"
+
+# Float toggle (alt+f)
+[[hotkeys]]
+binding = "Option+F"
+id = "toggleFocusedWindowFloating"
+
+# Column width cycling (alt+t shrink, alt+y grow → backward/forward)
+[[hotkeys]]
+binding = "Option+T"
+id = "cycleColumnWidthBackward"
+
+[[hotkeys]]
+binding = "Option+Y"
+id = "cycleColumnWidthForward"
+
+# Layout toggle (alt+slash → toggle niri/dwindle, closest to tiles h/v toggle)
+[[hotkeys]]
+binding = "Option+/"
+id = "toggleWorkspaceLayout"
+
+# Column tabbed (alt+comma → closest to accordion)
+[[hotkeys]]
+binding = "Option+,"
+id = "toggleColumnTabbed"
+
+# Balance sizes (alt+shift+b)
+[[hotkeys]]
+binding = "Option+Shift+B"
+id = "balanceSizes"
+
+# Move column (alt+cmd+h/l for left/right column movement)
+[[hotkeys]]
+binding = "Option+Command+H"
+id = "moveColumn.left"
+
+[[hotkeys]]
+binding = "Option+Command+L"
+id = "moveColumn.right"
+
+# Toggle column full width
+[[hotkeys]]
+binding = "Option+Shift+F"
+id = "toggleColumnFullWidth"
+
+# Quake terminal (alt+backtick)
+[[hotkeys]]
+binding = "Option+`"
+id = "toggleQuakeTerminal"
+
+# Command palette
+[[hotkeys]]
+binding = "Control+Option+Space"
+id = "openCommandPalette"
+
+# Overview
+[[hotkeys]]
+binding = "Option+Shift+O"
+id = "toggleOverview"
+
+# Move window to workspace up/down
+[[hotkeys]]
+binding = "Control+Option+Shift+Up Arrow"
+id = "moveWindowToWorkspaceUp"
+
+[[hotkeys]]
+binding = "Control+Option+Shift+Down Arrow"
+id = "moveWindowToWorkspaceDown"
+
+# Move column to workspace up/down
+[[hotkeys]]
+binding = "Control+Option+Shift+Page Up"
+id = "moveColumnToWorkspaceUp"
+
+[[hotkeys]]
+binding = "Control+Option+Shift+Page Down"
+id = "moveColumnToWorkspaceDown"
+
+# Raise all floating windows
+[[hotkeys]]
+binding = "Option+Shift+R"
+id = "raiseAllFloatingWindows"
+
+# Focus previous window
+[[hotkeys]]
+binding = "Unassigned"
+id = "focusPrevious"
+
+# Workspace next/previous
+[[hotkeys]]
+binding = "Unassigned"
+id = "switchWorkspace.next"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "switchWorkspace.previous"
+
+# Focus traversal
+[[hotkeys]]
+binding = "Unassigned"
+id = "focusDownOrLeft"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "focusUpOrRight"
+
+# Move column to workspace by index (unassigned)
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveColumnToWorkspace.0"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveColumnToWorkspace.1"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveColumnToWorkspace.2"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveColumnToWorkspace.3"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveColumnToWorkspace.4"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveColumnToWorkspace.5"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveColumnToWorkspace.6"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveColumnToWorkspace.7"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveColumnToWorkspace.8"
+
+# Focus column by index
+[[hotkeys]]
+binding = "Control+Option+1"
+id = "focusColumn.0"
+
+[[hotkeys]]
+binding = "Control+Option+2"
+id = "focusColumn.1"
+
+[[hotkeys]]
+binding = "Control+Option+3"
+id = "focusColumn.2"
+
+[[hotkeys]]
+binding = "Control+Option+4"
+id = "focusColumn.3"
+
+[[hotkeys]]
+binding = "Control+Option+5"
+id = "focusColumn.4"
+
+[[hotkeys]]
+binding = "Control+Option+6"
+id = "focusColumn.5"
+
+[[hotkeys]]
+binding = "Control+Option+7"
+id = "focusColumn.6"
+
+[[hotkeys]]
+binding = "Control+Option+8"
+id = "focusColumn.7"
+
+[[hotkeys]]
+binding = "Control+Option+9"
+id = "focusColumn.8"
+
+# Focus column first/last
+[[hotkeys]]
+binding = "Option+Home"
+id = "focusColumnFirst"
+
+[[hotkeys]]
+binding = "Option+End"
+id = "focusColumnLast"
+
+# Dwindle (unassigned, keeping defaults)
+[[hotkeys]]
+binding = "Unassigned"
+id = "moveToRoot"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "toggleSplit"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "swapSplit"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "resizeGrow.left"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "resizeGrow.right"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "resizeGrow.up"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "resizeGrow.down"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "resizeShrink.left"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "resizeShrink.right"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "resizeShrink.up"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "resizeShrink.down"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "preselect.left"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "preselect.right"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "preselect.up"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "preselect.down"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "preselectClear"
+
+# Scratchpad
+[[hotkeys]]
+binding = "Unassigned"
+id = "assignFocusedWindowToScratchpad"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "toggleScratchpadWindow"
+
+# UI toggles
+[[hotkeys]]
+binding = "Control+Option+M"
+id = "openMenuAnywhere"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "toggleWorkspaceBarVisibility"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "toggleHiddenBar"
+
+[[hotkeys]]
+binding = "Unassigned"
+id = "rescueOffscreenWindows"
