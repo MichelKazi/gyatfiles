@@ -26,17 +26,20 @@ vim.api.nvim_create_autocmd("LspProgress", {
       end
     end
 
-    local msg = {} ---@type string[]
     progress[client.id] = vim.tbl_filter(function(v)
-      return table.insert(msg, v.msg) or not v.done
+      return not v.done
     end, p)
 
+    -- Show only the most recent active task (avoids stacking spam during big compiles)
+    local active = progress[client.id]
+    local msg = #active > 0 and active[#active].msg or "Done"
+
     local spinner = { "🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘", "🌑" }
-    vim.notify(table.concat(msg, "\n"), "info", {
+    vim.notify(msg, "info", {
       id = "lsp_progress",
       title = client.name,
       opts = function(notif)
-        notif.icon = #progress[client.id] == 0 and " "
+        notif.icon = #active == 0 and " "
           or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
       end,
     })

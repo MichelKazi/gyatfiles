@@ -10,7 +10,8 @@
       "Bash(gem install:*)",
       "Bash(rbenv:*)",
       "Bash(cat:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(rg *)"
     ],
     "deny": [],
     "ask": []

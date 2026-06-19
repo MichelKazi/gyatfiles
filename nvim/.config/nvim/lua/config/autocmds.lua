@@ -43,5 +43,4 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 util.highlights.enable_gradient_line_numbers()
 util.highlights.apply_colorscheme_overrides()
 
--- LSP progress notifications (used by Metals and other LSP servers)
 require("config.lsp-progress")

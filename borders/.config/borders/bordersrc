@@ -4,10 +4,11 @@
 RED="0xffff4500"
 GREEN="0xff32cd32"
 BLUE="0xff1e90ff"
+CYAN="0xff00e5ff"
 YELLOW="0xffffd700"
 ORANGE="0xffffa500"
 PINK="0xffff69b4"
-DEFAULT="0xffff4500"
+DEFAULT="0xff00e5ff"
 
 # Check if $BORDERS_ACTIVE_COLOR is set and map it to the corresponding color
 case "$BORDERS_ACTIVE_COLOR" in
@@ -29,6 +30,9 @@ case "$BORDERS_ACTIVE_COLOR" in
 "pink")
   ACTIVE_COLOR=$PINK
   ;;
+"cyan")
+  ACTIVE_COLOR=$CYAN
+  ;;
 *)
   # Default to red if the environment variable is not set or does not match any case
   ACTIVE_COLOR=$DEFAULT
@@ -39,4 +43,4 @@ esac
 INACTIVE_COLOR="0xff808080"
 
 # Execute the borders command with the determined active and inactive colors
-borders active_color=$ACTIVE_COLOR inactive_color=$INACTIVE_COLOR width=12
+borders active_color=$ACTIVE_COLOR inactive_color=$INACTIVE_COLOR width=9

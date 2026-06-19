@@ -250,8 +250,8 @@ return {
       -- Use sbt BSP directly (better for complex builds with codegen like thrift)
       fallbackScalaVersion = "2.13.12",
 
-      -- JVM settings
-      javaHome = "/Users/mkazi/.sdkman/candidates/java/current",
+      -- JVM settings (resolve symlink to avoid Metals "Java home updated" popup)
+      javaHome = vim.fn.resolve("/Users/mkazi/.sdkman/candidates/java/current"),
       serverProperties = {
         "-Xmx8G",
         "-XX:+UseG1GC",
@@ -266,8 +266,11 @@ return {
       },
 
       -- Build settings for large projects with codegen (thrift, etc.)
-      autoImportBuild = "all", -- Re-import when build changes (needed for codegen)
+      automaticImportBuild = "all", -- Re-import when build changes (needed for codegen)
       defaultBspToBuildTool = true, -- Use sbt BSP directly, not Bloop
+
+      -- MCP server for AI tools (Claude Code connects via SSE)
+      startMcpServer = true,
     }
 
     metals_config.init_options = {
@@ -281,8 +284,10 @@ return {
     -- Capabilities
     if package.loaded["blink.cmp"] then
       metals_config.capabilities = require("blink-cmp").get_lsp_capabilities()
-    else
+    elseif pcall(require, "cmp_nvim_lsp") then
       metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities()
+    else
+      metals_config.capabilities = vim.lsp.protocol.make_client_capabilities()
     end
 
     metals_config.on_attach = function(client, bufnr)
