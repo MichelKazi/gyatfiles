@@ -1,2 +1,12 @@
 **/*secret*
 **/*env*
+
+# tmux: tpm-managed plugins (runtime artifacts, not config)
+tmux/.tmux/plugins/
+
+# nvim: lazy plugin lockfile differs per machine — keep but allow per-machine drift
+# (tracked; uncomment next line to make machine-local instead)
+# nvim/.config/nvim/lazy-lock.json
+
+# backups
+*.bak
