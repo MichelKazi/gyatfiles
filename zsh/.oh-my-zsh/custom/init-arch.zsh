@@ -1,3 +1,5 @@
+[[ "$OSTYPE" == linux* ]] || return
+
 # Arch Linux / Steam Deck specific initialization
 # This file is sourced instead of init.zsh on Arch systems
 

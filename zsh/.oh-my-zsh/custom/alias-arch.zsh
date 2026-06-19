@@ -1,3 +1,5 @@
+[[ "$OSTYPE" == linux* ]] || return
+
 # Arch Linux / Steam Deck aliases
 # Platform-agnostic aliases that work on Linux
 
