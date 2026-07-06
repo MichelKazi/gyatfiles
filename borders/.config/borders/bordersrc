@@ -1,46 +1,31 @@
 #!/bin/bash
+# vector bordersrc — window borders follow the channel logic.
+# Default active = cyan (the "focused" channel); BORDERS_ACTIVE_COLOR can
+# retune per-context (red = danger session, amber = machine focus, etc).
 
-# Define color variables in ARGB format
-RED="0xffff4500"
-GREEN="0xff32cd32"
-BLUE="0xff1e90ff"
-CYAN="0xff00e5ff"
-YELLOW="0xffffd700"
-ORANGE="0xffffa500"
-PINK="0xffff69b4"
-DEFAULT="0xff00e5ff"
+CRIMSON="0xffff5d73"
+GREEN="0xff34d399"
+BLUE="0xff60a5fa"
+CYAN="0xff22d3ee"
+AMBER="0xfff0b429"
+EMBER="0xffff8f5e"
+PINK="0xffe879a0"
+VIOLET="0xffb18aff"
+DEFAULT="0xff22d3ee"
 
-# Check if $BORDERS_ACTIVE_COLOR is set and map it to the corresponding color
 case "$BORDERS_ACTIVE_COLOR" in
-"red")
-  ACTIVE_COLOR=$RED
-  ;;
-"green")
-  ACTIVE_COLOR=$GREEN
-  ;;
-"blue")
-  ACTIVE_COLOR=$BLUE
-  ;;
-"yellow")
-  ACTIVE_COLOR=$YELLOW
-  ;;
-"orange")
-  ACTIVE_COLOR=$ORANGE
-  ;;
-"pink")
-  ACTIVE_COLOR=$PINK
-  ;;
-"cyan")
-  ACTIVE_COLOR=$CYAN
-  ;;
-*)
-  # Default to red if the environment variable is not set or does not match any case
-  ACTIVE_COLOR=$DEFAULT
-  ;;
+"red" | "crimson") ACTIVE_COLOR=$CRIMSON ;;
+"green")           ACTIVE_COLOR=$GREEN ;;
+"blue")            ACTIVE_COLOR=$BLUE ;;
+"yellow" | "amber") ACTIVE_COLOR=$AMBER ;;
+"orange" | "ember") ACTIVE_COLOR=$EMBER ;;
+"pink")            ACTIVE_COLOR=$PINK ;;
+"violet" | "purple") ACTIVE_COLOR=$VIOLET ;;
+"cyan")            ACTIVE_COLOR=$CYAN ;;
+*)                 ACTIVE_COLOR=$DEFAULT ;;
 esac
 
-# Inactive color (gray) in ARGB format
-INACTIVE_COLOR="0xff808080"
+# Inactive = grid hairline
+INACTIVE_COLOR="0xff1a2332"
 
-# Execute the borders command with the determined active and inactive colors
 borders active_color=$ACTIVE_COLOR inactive_color=$INACTIVE_COLOR width=9

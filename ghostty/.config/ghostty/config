@@ -1,8 +1,17 @@
 font-family = FiraCode Nerd Font Mono
-theme = Catppuccin Mocha
+theme = vector
 keybind=super+shift+plus=increase_font_size:1
 background-blur = true
 background-opacity = 1.00
 link-url = true
 cursor-style = block
 cursor-style-blink = true
+macos-auto-secure-input = false
+
+# ─── vector metrics (DESIGN.md §8) ───────────────────────────────────────────
+# Font metrics, not colors: taller cells = vertical padding (fills stretch,
+# text auto-centers), thick offset underlines = the 2px active-tab line.
+adjust-cell-height = 35%
+adjust-underline-thickness = 2
+adjust-underline-position = 40%
+adjust-box-thickness = 1

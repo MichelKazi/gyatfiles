@@ -39,9 +39,19 @@ return {
     lazy = true,
   },
   {
+    "vector.nvim",
+    dir = vim.fn.expand("~/gyatfiles/vector/nvim/vector.nvim"),
+    lazy = false,
+    priority = 1000,
+  },
+  {
+    "nvim-lualine/lualine.nvim",
+    opts = { options = { theme = "vector" } },
+  },
+  {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "catppuccin",
+      colorscheme = "vector",
     },
   },
 }

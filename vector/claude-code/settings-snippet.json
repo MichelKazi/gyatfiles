@@ -1,0 +1,7 @@
+{
+  "_comment": "merge into ~/.claude/settings.json (statusLine is top-level)",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/vector-statusline.sh"
+  }
+}

@@ -1,0 +1,58 @@
+# vector palette + key styles for starship.
+# starship.toml doesn't support includes: paste the [palettes.vector] block
+# into ~/.config/starship.toml and add `palette = "vector"` at the top level.
+# The style overrides below are optional but complete the look.
+
+palette = "vector"
+
+[palettes.vector]
+void = "#05080f"
+bg = "#0a0e17"
+surface = "#0d1220"
+panel = "#0d1a26"
+grid = "#1a2332"
+dim = "#3d4f6b"
+faint = "#5a7290"
+text = "#c8d8ea"
+bright = "#eaf4ff"
+cyan = "#22d3ee"
+ice = "#7dd3fc"
+blue = "#60a5fa"
+violet = "#b18aff"
+pink = "#e879a0"
+crimson = "#ff5d73"
+ember = "#ff8f5e"
+amber = "#f0b429"
+green = "#34d399"
+
+[character]
+success_symbol = "[❯](bold cyan)"
+error_symbol = "[❯](bold crimson)"
+vimcmd_symbol = "[❮](bold pink)"
+
+[directory]
+style = "bold blue"
+
+[git_branch]
+style = "bold pink"
+
+[git_status]
+style = "bold amber"
+
+[cmd_duration]
+style = "faint"
+
+[aws]
+style = "bold amber"
+
+[scala]
+style = "bold crimson"
+
+[golang]
+style = "bold cyan"
+
+[lua]
+style = "bold blue"
+
+[python]
+style = "bold green"

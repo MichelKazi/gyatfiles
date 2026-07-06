@@ -1,4 +1,36 @@
+# ─── vector palette (VECTOR//OS) ─────────────────────────────────────────────
+palette = "vector"
+
+[palettes.vector]
+void = "#05080f"
+bg = "#0a0e17"
+surface = "#0d1220"
+panel = "#0d1a26"
+grid = "#1a2332"
+dim = "#3d4f6b"
+faint = "#5a7290"
+text = "#c8d8ea"
+bright = "#eaf4ff"
+cyan = "#22d3ee"
+ice = "#7dd3fc"
+blue = "#60a5fa"
+violet = "#b18aff"
+pink = "#e879a0"
+crimson = "#ff5d73"
+ember = "#ff8f5e"
+amber = "#f0b429"
+green = "#34d399"
+
+[character]
+success_symbol = "[❯](bold cyan)"
+error_symbol = "[❯](bold crimson)"
+vimcmd_symbol = "[❮](bold pink)"
+
+[directory]
+style = "bold blue"
+
 [aws]
+style = "bold amber"
 format = '\[[$symbol($profile)(\($region\))(\[$duration\])]($style)\]'
 
 [bun]
@@ -11,6 +43,7 @@ format = '\[[$symbol($version(-$name))]($style)\]'
 format = '\[[$symbol($version)]($style)\]'
 
 [cmd_duration]
+style = "faint"
 format = '\[[⏱ $duration]($style)\]'
 
 [cobol]
@@ -56,12 +89,15 @@ format = '\[[$symbol$branch]($style)\]'
 format = '\[[$symbol$account(@$domain)(\($region\))]($style)\]'
 
 [git_branch]
+style = "bold pink"
 format = '\[[$symbol$branch]($style)\]'
 
 [git_status]
+style = "bold amber"
 format = '([\[$all_status$ahead_behind\]]($style))'
 
 [golang]
+style = "bold cyan"
 format = '\[[$symbol($version)]($style)\]'
 
 [gradle]
@@ -95,6 +131,7 @@ format = '\[[$symbol($version)]($style)\]'
 format = '\[[$symbol$context( \($namespace\))]($style)\]'
 
 [lua]
+style = "bold blue"
 format = '\[[$symbol($version)]($style)\]'
 
 [memory_usage]
@@ -143,6 +180,7 @@ format = '\[[$symbol$stack]($style)\]'
 format = '\[[$symbol($version)]($style)\]'
 
 [python]
+style = "bold green"
 format = '\[[${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style)\]'
 
 [raku]
@@ -158,6 +196,7 @@ format = '\[[$symbol($version)]($style)\]'
 format = '\[[$symbol($version)]($style)\]'
 
 [scala]
+style = "bold crimson"
 format = '\[[$symbol($version)]($style)\]'
 
 [spack]

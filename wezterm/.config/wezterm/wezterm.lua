@@ -42,7 +42,7 @@ local cyberdream = {
 	indexed = { [16] = "#ffbd5e", [17] = "#ff6e5e" },
 }
 
-c.colors = cyberdream
+c.colors = require("vector")
 
 c.font = wezterm.font("FiraCode Nerd Font")
 c.window_decorations = "TITLE | RESIZE"
