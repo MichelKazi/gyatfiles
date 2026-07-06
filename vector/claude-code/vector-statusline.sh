@@ -62,38 +62,28 @@ if [ -n "$dir" ] && command -v git >/dev/null 2>&1; then
   fi
 fi
 
-# ── context meter (transcript-size heuristic) ────────────────────
+# ── context tokens (real usage from the transcript) ──────────────
+# Last assistant turn's input + cache_creation + cache_read = tokens currently
+# in context. Accurate, unlike the old byte-size pct heuristic (dropped, along
+# with the equally-wrong cost segment). Rendered NNNk/200k, escalating
+# pink -> amber >=80% -> crimson >=95% of the window.
 transcript=$(jqget '.transcript_path')
-if [ -n "$transcript" ] && [ -f "$transcript" ]; then
-  bytes=$(wc -c < "$transcript" 2>/dev/null | tr -d ' ')
-  if [ -n "$bytes" ] && [ "$bytes" -gt 0 ] 2>/dev/null; then
-    # bytes -> ~tokens (/3.8 chars) -> % of ~160k usable window
-    pct=$(( bytes * 100 / 38 / 16000 ))
-    [ "$pct" -gt 100 ] && pct=100
-
+if [ -n "$transcript" ] && [ -f "$transcript" ] && [ "$have_jq" -eq 1 ]; then
+  ctx=$(jq -s '[.[]|select(.message.usage)]|last|.message.usage
+    |(.input_tokens+(.cache_creation_input_tokens//0)+(.cache_read_input_tokens//0))' \
+    "$transcript" 2>/dev/null)
+  if [ -n "$ctx" ] && [ "$ctx" -gt 0 ] 2>/dev/null; then
+    if [ "$ctx" -ge 1000 ]; then tok="$((ctx / 1000))k"; else tok="$ctx"; fi
+    pctwin=$(( ctx * 100 / 200000 ))
     color=$PINK
-    [ "$pct" -ge 80 ] && color=$AMBER
-    [ "$pct" -ge 95 ] && color=$CRIMSON
+    [ "$pctwin" -ge 80 ] && color=$AMBER
+    [ "$pctwin" -ge 95 ] && color=$CRIMSON
+    out="${out}${SEP}${color}${tok}/200k${RESET}"
 
-    filled=$((pct / 10)); bar=""
-    i=0
-    while [ "$i" -lt 10 ]; do
-      if [ "$i" -lt "$filled" ]; then bar="${bar}▓"; else bar="${bar}░"; fi
-      i=$((i + 1))
-    done
-    out="${out}${SEP}${color}CTX ${pct}% ${bar}${RESET}"
-
-    # Feed the tmux rail (vector-ctx.sh reads this file).
+    # Feed the tmux rail (vector-ctx.sh reads this file) the raw token count.
     mkdir -p "$HOME/.cache" 2>/dev/null
-    printf '%s' "$pct" > "$HOME/.cache/claude-ctx" 2>/dev/null
+    printf '%s' "$ctx" > "$HOME/.cache/claude-ctx" 2>/dev/null
   fi
-fi
-
-# ── session cost ─────────────────────────────────────────────────
-cost=$(jqget '.cost.total_cost_usd')
-if [ -n "$cost" ]; then
-  cost=$(printf '%.2f' "$cost" 2>/dev/null || echo "$cost")
-  out="${out}${SEP}${FAINT}\$${cost}${RESET}"
 fi
 
 printf '%s' "$out"

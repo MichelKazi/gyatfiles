@@ -153,3 +153,24 @@ metrics, not tmux styles (`ghostty/config-snippet`):
 Surfaces without metrics control (Moshi/iOS) degrade to thin underlines and
 single-height cells; the grammar survives because color, brackets, and glyphs
 carry the meaning — metrics only carry the polish.
+
+## 9. Powerline display variant
+
+Powerline fills are permitted as a display variant on exactly one class of
+surface: single-line prompt/status lines on hosts where a Nerd Font is
+guaranteed (starship prompt, Claude Code statusline). The rules:
+
+- **Slants only** (U+E0BC / U+E0B8 family) — the separator is the `//`
+  wordmark drawn as geometry. Round caps (U+E0B4/E0B6) remain banned
+  everywhere; the classic arrow (U+E0B0) is a tolerated substitute, never
+  the default.
+- **Fill flow tells depth**: strong channel fill for the primary segment
+  (model, directory), then descending through `panel` → `grid` → `void` —
+  the line literally fades into the background layer stack.
+- **Text on fills** is `base.bg`, bold. Text on layer fills (`panel`/`grid`/
+  `void`) is the segment's channel color.
+- **The multi-row grammar is unchanged.** tmux rails, pickers, and nvim keep
+  §1–§8: brackets, hard edges, underlines. Powerline is a costume for
+  one-liners, not a new dialect.
+- **Degrade path is mandatory**: every powerline surface has a plain sibling
+  (vector-statusline.sh, vector.toml) with identical data.
