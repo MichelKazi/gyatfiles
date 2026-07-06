@@ -1,0 +1,102 @@
+# vector-powerline — slant-separated Vector prompt for starship (DESIGN.md §9).
+# This is a COMPLETE starship config (format + palette + modules), not a merge
+# snippet like vector.toml. Use one or the other:
+#   ln -sf ~/gyatfiles/vector/starship/vector-powerline.toml ~/.config/starship.toml
+# Requires a Nerd Font for the slant glyphs (U+E0BC "" / U+E0B8 "").
+# The plain vector.toml is the degrade path — same channels, no fills.
+#
+# Layout (line 1 fills, line 2 input):
+#    dirname   main !2   sbt 1.9  0.4s
+#   blue fill  panel+pink  grid+lang   void+faint
+#   ❯ (cyan, crimson on error)
+
+"$schema" = 'https://starship.rs/config-schema.json'
+palette = "vector"
+add_newline = true
+
+format = """
+[](fg:blue)\
+$directory\
+[](fg:blue bg:panel)\
+$git_branch\
+$git_status\
+[](fg:panel bg:grid)\
+$scala\
+$golang\
+$lua\
+$python\
+$nodejs\
+$aws\
+[](fg:grid bg:void)\
+$cmd_duration\
+[](fg:void)
+$character"""
+
+[palettes.vector]
+void = "#05080f"
+bg = "#0a0e17"
+surface = "#0d1220"
+panel = "#0d1a26"
+grid = "#1a2332"
+dim = "#3d4f6b"
+faint = "#5a7290"
+text = "#c8d8ea"
+bright = "#eaf4ff"
+cyan = "#22d3ee"
+ice = "#7dd3fc"
+blue = "#60a5fa"
+violet = "#b18aff"
+pink = "#e879a0"
+crimson = "#ff5d73"
+ember = "#ff8f5e"
+amber = "#f0b429"
+green = "#34d399"
+
+[directory]
+style = "fg:bg bg:blue bold"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[git_branch]
+style = "fg:pink bg:panel bold"
+format = "[ $symbol$branch ]($style)"
+symbol = " "
+
+[git_status]
+style = "fg:amber bg:panel"
+format = "[($all_status$ahead_behind )]($style)"
+
+[scala]
+style = "fg:crimson bg:grid"
+format = "[ $symbol($version) ]($style)"
+
+[golang]
+style = "fg:cyan bg:grid"
+format = "[ $symbol($version) ]($style)"
+
+[lua]
+style = "fg:blue bg:grid"
+format = "[ $symbol($version) ]($style)"
+
+[python]
+style = "fg:green bg:grid"
+format = "[ $symbol($version) ]($style)"
+
+[nodejs]
+style = "fg:green bg:grid"
+format = "[ $symbol($version) ]($style)"
+
+[aws]
+style = "fg:amber bg:grid"
+format = "[ $symbol($profile) ]($style)"
+
+[cmd_duration]
+style = "fg:faint bg:void"
+format = "[ $duration ]($style)"
+min_time = 2000
+
+[character]
+success_symbol = "[❯](bold cyan)"
+error_symbol = "[❯](bold crimson)"
+vimcmd_symbol = "[❮](bold pink)"

@@ -59,6 +59,8 @@ Stow-friendly: each port lands where the matching gyatfiles package expects it.
 | borders | `borders/bordersrc` | replaces `~/.config/borders/bordersrc` (same env-var contract, vector colors) |
 | wezterm | `wezterm/vector.lua` | copy next to `wezterm.lua`, `config.color_schemes = { vector = require("vector") }` |
 | components | `lib/vector-components.sh` | source from any script rendering Vector UI (tmux formats + ANSI helpers) |
+| Claude Code (powerline) | `claude-code/vector-statusline-powerline.sh` | alternative statusline — slant fills, Nerd Font required |
+| starship (powerline) | `starship/vector-powerline.toml` | complete config, symlink as starship.toml — slant-fill prompt |
 
 ### The context-meter loop
 
