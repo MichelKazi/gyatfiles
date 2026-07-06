@@ -1,0 +1,41 @@
+# vector theme for lsd — 256-color nearest matches of the truecolor palette.
+# cyan 45 · crimson 204 · green 42 · amber 214 · blue 75 · violet 141
+# pink 211 · ember 209 · ice 117 · mint 122 · dim 60 · faint 67 · text 153
+user: 45
+group: 67
+permission:
+  read: 42
+  write: 214
+  exec: 204
+  exec-sticky: 141
+  no-access: 60
+  octal: 67
+  acl: 67
+  context: 45
+date:
+  hour-old: 117
+  day-old: 67
+  older: 60
+size:
+  none: 60
+  small: 42
+  medium: 214
+  large: 209
+inode:
+  valid: 211
+  invalid: 60
+links:
+  valid: 45
+  invalid: 60
+tree-edge: 60
+git-status:
+  default: 60
+  unmodified: 60
+  ignored: 60
+  new-in-index: 42
+  new-in-workdir: 42
+  typechange: 75
+  deleted: 204
+  renamed: 122
+  modified: 75
+  conflicted: 209

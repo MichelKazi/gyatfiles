@@ -1,0 +1,265 @@
+{
+  "$schema": "vector palette v1 — canonical tokens. Every port derives from this file.",
+  "name": "vector",
+  "family": "VECTOR//OS (Selene / Helios / Vector)",
+  "appearance": "dark",
+  "base": {
+    "void": {
+      "hex": "#05080f",
+      "role": "deepest layer — shadows, contrast wells"
+    },
+    "bg": {
+      "hex": "#0a0e17",
+      "role": "terminal + editor background"
+    },
+    "surface": {
+      "hex": "#0d1220",
+      "role": "subtle raise — cursorline, statusline bg"
+    },
+    "panel": {
+      "hex": "#0d1a26",
+      "role": "active fills, floats, popups (cyan-family fill)"
+    },
+    "grid": {
+      "hex": "#1a2332",
+      "role": "borders, hairlines, ANSI black"
+    },
+    "overlay": {
+      "hex": "#2a3648",
+      "role": "scrollbar, folded, heavy divider"
+    },
+    "selection": {
+      "hex": "#1c2e4a",
+      "role": "visual selection, search bg"
+    },
+    "dim": {
+      "hex": "#3d4f6b",
+      "role": "line numbers, punctuation, ANSI br-black"
+    },
+    "comment": {
+      "hex": "#4d6285",
+      "role": "comments (italic) — legible slate"
+    },
+    "faint": {
+      "hex": "#5a7290",
+      "role": "secondary text, hints"
+    },
+    "text": {
+      "hex": "#c8d8ea",
+      "role": "primary foreground"
+    },
+    "bright": {
+      "hex": "#eaf4ff",
+      "role": "bold emphasis, titles, ANSI br-white"
+    }
+  },
+  "neon": {
+    "cyan": {
+      "hex": "#22d3ee",
+      "role": "functions, active window channel, cursor, hints"
+    },
+    "ice": {
+      "hex": "#7dd3fc",
+      "role": "properties, fields, members"
+    },
+    "blue": {
+      "hex": "#60a5fa",
+      "role": "types, classes, info, SSH channel"
+    },
+    "violet": {
+      "hex": "#b18aff",
+      "role": "builtins, self/this, special keywords, macros"
+    },
+    "pink": {
+      "hex": "#e879a0",
+      "role": "numbers, booleans, constants, ctx-meter channel"
+    },
+    "crimson": {
+      "hex": "#ff5d73",
+      "role": "keywords, statements, sessions channel, errors"
+    },
+    "ember": {
+      "hex": "#ff8f5e",
+      "role": "regex, escapes, special chars, operators-special"
+    },
+    "amber": {
+      "hex": "#f0b429",
+      "role": "strings-alt, enums, machine channel, warnings"
+    },
+    "green": {
+      "hex": "#34d399",
+      "role": "strings, success, diff-add, sys-up channel"
+    }
+  },
+  "bright": {
+    "crimson": {
+      "hex": "#ff7a8c",
+      "role": "ANSI 9"
+    },
+    "green": {
+      "hex": "#6ee7b7",
+      "role": "ANSI 10 (mint)"
+    },
+    "amber": {
+      "hex": "#f7ce68",
+      "role": "ANSI 11"
+    },
+    "blue": {
+      "hex": "#93c5fd",
+      "role": "ANSI 12"
+    },
+    "violet": {
+      "hex": "#cfaaff",
+      "role": "ANSI 13"
+    },
+    "cyan": {
+      "hex": "#67e8f9",
+      "role": "ANSI 14"
+    }
+  },
+  "fills": {
+    "crimson_bg": {
+      "hex": "#2a1018",
+      "role": "active session fill, error bg, diff-delete bg"
+    },
+    "amber_bg": {
+      "hex": "#241a08",
+      "role": "warning bg, uplink fill"
+    },
+    "green_bg": {
+      "hex": "#0c2018",
+      "role": "success bg, diff-add bg"
+    },
+    "blue_bg": {
+      "hex": "#101f38",
+      "role": "info bg, diff-change bg"
+    },
+    "cyan_bg": {
+      "hex": "#0d1a26",
+      "role": "alias of base.panel — active window fill"
+    }
+  },
+  "ansi": {
+    "0": "#1a2332",
+    "1": "#ff5d73",
+    "2": "#34d399",
+    "3": "#f0b429",
+    "4": "#60a5fa",
+    "5": "#b18aff",
+    "6": "#22d3ee",
+    "7": "#c8d8ea",
+    "8": "#3d4f6b",
+    "9": "#ff7a8c",
+    "10": "#6ee7b7",
+    "11": "#f7ce68",
+    "12": "#93c5fd",
+    "13": "#cfaaff",
+    "14": "#67e8f9",
+    "15": "#eaf4ff"
+  },
+  "channels": {
+    "_doc": "color = meaning, everywhere. A thing keeps its channel across tmux, nvim, statuslines.",
+    "windows": "cyan",
+    "sessions": "crimson",
+    "machine": "amber",
+    "health": "green (up) / crimson (down)",
+    "uplink": "blue",
+    "context": "pink -> amber at 80 -> crimson at 95"
+  },
+  "grammar": {
+    "_doc": "active-state grammar shared by every surface",
+    "active": "bold + family fill + colored underline (Setulc)",
+    "inactive": "desaturated family tone, no fill",
+    "danger": "bold crimson — the only thing allowed to shout"
+  },
+  "dim_neon": {
+    "_doc": "inactive-state partner of each neon — 50% blend toward base.dim. Inactive UI keeps its channel, desaturated.",
+    "cyan": {
+      "hex": "#3091ac",
+      "role": "inactive cyan"
+    },
+    "ice": {
+      "hex": "#5d91b4",
+      "role": "inactive ice"
+    },
+    "blue": {
+      "hex": "#4e7ab2",
+      "role": "inactive blue"
+    },
+    "violet": {
+      "hex": "#776cb5",
+      "role": "inactive violet"
+    },
+    "pink": {
+      "hex": "#926486",
+      "role": "inactive pink"
+    },
+    "crimson": {
+      "hex": "#a05468",
+      "role": "inactive crimson"
+    },
+    "ember": {
+      "hex": "#9e6f64",
+      "role": "inactive ember"
+    },
+    "amber": {
+      "hex": "#96824a",
+      "role": "inactive amber"
+    },
+    "green": {
+      "hex": "#389182",
+      "role": "inactive green"
+    }
+  },
+  "glyphs": {
+    "_doc": "the complete Vector glyph set — plain Unicode, no Nerd Font required",
+    "pointer": {
+      "glyph": "▸",
+      "role": "selection pointer, drill-in action"
+    },
+    "menu": {
+      "glyph": "▾",
+      "role": "tap opens a picker below"
+    },
+    "fleet": {
+      "glyph": "◆",
+      "role": "agent-bearing entity (fleet host, marker in pickers)"
+    },
+    "up": {
+      "glyph": "●",
+      "role": "health dot — colored by state"
+    },
+    "ok": {
+      "glyph": "✓",
+      "role": "affirmative state suffix (VPN✓)"
+    },
+    "down": {
+      "glyph": "✗",
+      "role": "failure state suffix — always bold crimson"
+    },
+    "pending": {
+      "glyph": "…",
+      "role": "transitional state — always amber"
+    },
+    "busy": {
+      "glyph": "✻",
+      "role": "working / agent active (Claude's own spinner char)"
+    },
+    "meter_fill": {
+      "glyph": "▓",
+      "role": "meter filled cell"
+    },
+    "meter_empty": {
+      "glyph": "░",
+      "role": "meter empty cell"
+    },
+    "divider": {
+      "glyph": "│",
+      "role": "thin segment divider, always base.dim"
+    },
+    "brand": {
+      "glyph": "//",
+      "role": "brand digraph — titles only (VECTOR//SESSIONS)"
+    }
+  }
+}

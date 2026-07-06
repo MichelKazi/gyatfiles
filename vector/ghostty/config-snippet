@@ -1,0 +1,28 @@
+# vector metrics — paste into ~/.config/ghostty/config (NOT the theme file;
+# these are font metrics, not colors). This is what turns the character-grid
+# rendering into the "CSS mockup" look: taller cells = vertical padding
+# (text auto-centers, fills stretch), thick offset underlines = the 2px
+# active-tab line from the Vector spec.
+#
+# Tune live: ghostty reloads config on cmd+shift+, — start here, nudge to taste.
+
+theme = vector
+
+# vertical padding: grows every cell; backgrounds fill the whole cell,
+# so tmux fills and nvim cursorline get taller for free
+adjust-cell-height = 35%
+
+# the Vector underline: ~3px total, pushed down into the new padding
+# so it sits under the text like text-underline-offset
+adjust-underline-thickness = 2
+adjust-underline-position = 40%
+
+# taste: chunkier box-drawing (popup frames, nvim splits) to match
+adjust-box-thickness = 1
+
+# optional, macOS: slightly heavier glyphs read better on the dark bg
+# font-thicken = true
+
+# NOTE: these apply to ALL underlines everywhere (nvim spell undercurls,
+# link underlines) — that's a feature, the whole system thickens together.
+# Moshi/iOS has no equivalent; the grammar degrades to thin lines there.
