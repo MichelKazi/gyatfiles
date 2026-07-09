@@ -28,6 +28,13 @@ else
     echo "Xcode Command Line Tools already installed"
 fi
 
+# xcode-select's active dir can point at a missing/empty path after a fresh CLT
+# install, which breaks xcrun (and therefore git). Repoint it at the real CLT dir.
+if ! xcrun --version &>/dev/null && [[ -d /Library/Developer/CommandLineTools ]]; then
+    echo "Repointing xcode-select at CommandLineTools (xcrun was broken)..."
+    sudo xcode-select --switch /Library/Developer/CommandLineTools
+fi
+
 # 2. Clone (or update) the dotfiles repo.
 if [[ -d "$DOTFILES_DIR/.git" ]]; then
     echo "Repo present at $DOTFILES_DIR — pulling latest"
