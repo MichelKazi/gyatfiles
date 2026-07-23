@@ -2,10 +2,13 @@
 **/*env*
 
 # tmux: tpm-managed plugins (runtime artifacts, not config)
-tmux/.tmux/plugins/
+base/.tmux/plugins/
 
 # tmux: work-only rail overrides (Strava VPN/cloud). Template is .example.
-tmux/.tmux.work.conf
+base/.config/gyatfiles/tmux/work.conf
+
+# Local, machine-specific tmux theme overrides.
+tmux/vector.conf.work-*
 
 # nvim: lazy plugin lockfile differs per machine — keep but allow per-machine drift
 # (tracked; uncomment next line to make machine-local instead)

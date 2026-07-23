@@ -4,7 +4,7 @@
 # This file is sourced instead of init.zsh on Arch systems
 
 # Auto-start tmux if not already in a tmux session
-if [ -z "$TMUX" ]; then
+if [[ -z "$TMUX" && -z "${DOTFILES_NO_TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
     tmux new -A -s BASE
 fi
 
@@ -62,17 +62,3 @@ fi
 if command -v thefuck &> /dev/null; then
     eval $(thefuck --alias)
 fi
-
-# Powerlevel10k prompt
-if [[ -f /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]]; then
-    source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-fi
-
-# Load p10k config if it exists
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
-
-# Starship prompt (alternative to p10k, uncomment if preferred)
-# if command -v starship &> /dev/null; then
-#     eval "$(starship init zsh)"
-# fi

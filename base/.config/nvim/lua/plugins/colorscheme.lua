@@ -40,7 +40,7 @@ return {
   },
   {
     "vector.nvim",
-    dir = vim.fn.expand("~/gyatfiles/themes/vector/nvim/vector.nvim"),
+    dir = vim.fn.stdpath("config") .. "/vector.nvim",
     lazy = false,
     priority = 1000,
   },

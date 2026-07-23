@@ -1,1 +1,0 @@
-../../../themes/vector/fzf/vector.zsh

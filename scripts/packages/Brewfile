@@ -16,7 +16,7 @@ tap "rjyo/moshi", trusted: true
 tap "scalacenter/bloop"
 tap "supabase/tap"
 tap "uniclipboard/tap", "https://github.com/UniClipboard/homebrew-tap", trusted: true
-tap "wtfutil/wtfutil"
+tap "wtfutil/wtfutil", trusted: true
 tap "xcodesorg/made"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"

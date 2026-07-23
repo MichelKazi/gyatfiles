@@ -1,19 +1,24 @@
+local neotest_metals = vim.fn.expand("~/projects/neotest-metals")
+local has_neotest_metals = vim.fn.isdirectory(neotest_metals) == 1
+
 return {
   "nvim-neotest/neotest",
   dependencies = {
     "haydenmeade/neotest-jest",
     "olimorris/neotest-rspec",
-    { dir = "~/projects/neotest-metals" },
+    has_neotest_metals and { dir = neotest_metals } or nil,
   },
   opts = function(_, opts)
     opts.adapters = opts.adapters or {}
     table.insert(opts.adapters, require("neotest-rspec"))
-    table.insert(
-      opts.adapters,
-      require("neotest-metals")({
-        runner = "sbt",
-      })
-    )
+    if has_neotest_metals then
+      table.insert(
+        opts.adapters,
+        require("neotest-metals")({
+          runner = "sbt",
+        })
+      )
+    end
 
     -- Summary panel configuration
     opts.summary = opts.summary or {}

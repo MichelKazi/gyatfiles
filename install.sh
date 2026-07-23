@@ -13,6 +13,7 @@ set -uo pipefail
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/gyatfiles}"
 BREWFILE="$DOTFILES_DIR/scripts/packages/Brewfile"
 DRY_RUN=0
+SETUP_FAILED=0
 
 for arg in "$@"; do
     case "$arg" in
@@ -20,6 +21,11 @@ for arg in "$@"; do
         *) echo "Unknown arg: $arg (supported: --dry-run)"; exit 2 ;;
     esac
 done
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+    echo "Error: install.sh supports macOS only; use install-arch.sh on Arch Linux"
+    exit 1
+fi
 
 echo "=== Dotfiles Setup (macOS) ==="
 echo "Dotfiles directory: $DOTFILES_DIR"
@@ -30,6 +36,16 @@ if [[ ! -d "$DOTFILES_DIR" ]]; then
     echo "Error: dotfiles directory not found at $DOTFILES_DIR"
     echo "Clone your dotfiles repo there first:  git clone <repo> $DOTFILES_DIR"
     exit 1
+fi
+
+# Older layouts Stowed custom snippets as ~/.oh-my-zsh. That is not an Oh My
+# Zsh installation and prevented both the framework and snippets from loading.
+if [[ -L "$HOME/.oh-my-zsh" ]] && [[ "$(readlink "$HOME/.oh-my-zsh")" == *"gyatfiles/zsh/.oh-my-zsh" ]]; then
+    if [[ $DRY_RUN -eq 1 ]]; then
+        echo "[dry-run] would remove legacy ~/.oh-my-zsh symlink"
+    else
+        unlink "$HOME/.oh-my-zsh"
+    fi
 fi
 
 # --- Homebrew ---------------------------------------------------------------
@@ -43,6 +59,18 @@ if ! command -v brew &> /dev/null; then
     fi
 else
     echo "Homebrew already installed"
+fi
+
+# --- Oh My Zsh ---------------------------------------------------------------
+if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+    if [[ $DRY_RUN -eq 1 ]]; then
+        echo "[dry-run] would clone Oh My Zsh"
+    else
+        echo "Installing Oh My Zsh..."
+        git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
+    fi
+else
+    echo "Oh My Zsh already installed"
 fi
 
 # --- Packages (brew bundle) -------------------------------------------------
@@ -60,22 +88,39 @@ else
     # First pass: taps, formulae, casks, npm, uv. cargo entries may fail here
     # if the Rust toolchain isn't up yet; the second pass below fixes that.
     echo "Running brew bundle (pass 1)..."
-    brew bundle install --file="$BREWFILE" --no-lock || echo "brew bundle pass 1 had failures (likely cargo before Rust init), continuing..."
+    if ! brew bundle install --file="$BREWFILE"; then
+        echo "brew bundle pass 1 failed; continuing to Rust and Stow"
+        SETUP_FAILED=1
+    fi
 fi
 
 # --- Rust -------------------------------------------------------------------
 echo ""
 echo "=== Rust ==="
 if [[ $DRY_RUN -eq 1 ]]; then
-    command -v cargo &> /dev/null && echo "[dry-run] Rust already initialized" || echo "[dry-run] would run: rustup-init -y"
-elif command -v rustup-init &> /dev/null && ! command -v cargo &> /dev/null; then
+    if command -v cargo &> /dev/null; then
+        echo "[dry-run] Rust already initialized"
+    elif command -v rustup-init &> /dev/null; then
+        echo "[dry-run] would run: rustup-init -y"
+    else
+        echo "[dry-run] Rust requires rustup from the Brewfile"
+    fi
+elif command -v cargo &> /dev/null; then
+    echo "Rust already initialized"
+elif command -v rustup-init &> /dev/null; then
     echo "Initializing Rust toolchain..."
     rustup-init -y
     source "$HOME/.cargo/env"
     echo "Running brew bundle (pass 2, for cargo packages)..."
-    brew bundle install --file="$BREWFILE" --no-lock || echo "brew bundle pass 2 had failures, continuing..."
+    if brew bundle install --file="$BREWFILE"; then
+        SETUP_FAILED=0
+    else
+        echo "brew bundle pass 2 failed"
+        SETUP_FAILED=1
+    fi
 else
-    echo "Rust already initialized"
+    echo "Error: cargo and rustup-init are unavailable"
+    SETUP_FAILED=1
 fi
 
 # --- Stow -------------------------------------------------------------------
@@ -84,37 +129,27 @@ echo "=== Stowing Dotfiles ==="
 
 # Config directories with dotfiles to symlink. Add new ones here when you add
 # a top-level config dir to the repo.
-STOW_DIRS=(
-    aerospace
-    borders
-    cartographer
-    ghostty
-    ideavim
-    karabiner
-    lsd
-    nvim
-    omniwm
-    starship
-    tmux
-    wezterm
-    wtf
-    zsh
-)
+STOW_DIRS=(base macos)
 
 cd "$DOTFILES_DIR" || exit 1
 for dir in "${STOW_DIRS[@]}"; do
     if [[ ! -d "$DOTFILES_DIR/$dir" ]]; then
-        echo "Skipping $dir (not found in dotfiles)"
+        echo "Error: Stow package missing: $DOTFILES_DIR/$dir"
+        SETUP_FAILED=1
         continue
     fi
     if [[ $DRY_RUN -eq 1 ]]; then
         echo "[dry-run] stow $dir:"
-        stow -n -v "$dir" 2>&1 | sed 's/^/    /'
-    elif stow -n "$dir" 2>&1 | grep -q "existing target"; then
+        stow -n -v -d "$DOTFILES_DIR" -t "$HOME" "$dir" 2>&1 | sed 's/^/    /'
+    elif stow -n -d "$DOTFILES_DIR" -t "$HOME" "$dir" 2>&1 | grep -q "existing target"; then
         echo "Conflict: $dir (run 'stow --adopt $dir' to adopt existing files)"
+        SETUP_FAILED=1
     else
         echo "Stowing: $dir"
-        stow "$dir" || echo "Failed to stow $dir, continuing..."
+        if ! stow -d "$DOTFILES_DIR" -t "$HOME" "$dir"; then
+            echo "Failed to stow $dir"
+            SETUP_FAILED=1
+        fi
     fi
 done
 
@@ -122,3 +157,4 @@ echo ""
 echo "=== Setup Complete ==="
 [[ $DRY_RUN -eq 1 ]] && echo "(dry run — nothing was changed)"
 echo "Restart your terminal to apply all changes."
+exit "$SETUP_FAILED"

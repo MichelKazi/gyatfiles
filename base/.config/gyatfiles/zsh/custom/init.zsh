@@ -1,6 +1,6 @@
 [[ "$OSTYPE" == darwin* ]] || return
 
-if [ -z "$TMUX" ]; then
+if [[ -z "$TMUX" && -z "${DOTFILES_NO_TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
   tmux new -A -s BASE
 fi
 
@@ -39,7 +39,7 @@ fi
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # $PATH
-export PATH=${PATH}:`go env GOPATH`/bin
+command -v go >/dev/null 2>&1 && export PATH="$PATH:$(go env GOPATH)/bin"
 export PATH=${PATH}:~/bin
 export PATH="$PATH:/Users/mkazi/.local/bin"
 export PATH="$HOME/.canary-tools/bin:$PATH"
@@ -81,26 +81,10 @@ add-zsh-hook chpwd sdkman_auto_load
 sdkman_auto_load
 export PATH="/opt/homebrew/Cellar/openjdk@11/11.0.23/bin:$PATH"
 
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-eval "$(zoxide init zsh)"
-eval $(thefuck --alias)
-eval "$(rbenv init - zsh)"
-
-# Prompt
-#
-# --- Pure ---
-# fpath+=("$(brew --prefix)/share/zsh/site-functions")
-# autoload -U promptinit; promptinit
-# prompt pure
-
-# --- Starship ---
-# The starship prompt doesn't work from here, so we'll call it from vanilla .zshrc
-# eval "$(starship init zsh)" 
-
-# --- P10K ---
-source $(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+[[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+if command -v brew >/dev/null 2>&1; then
+  [[ -r "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
+command -v rbenv >/dev/null 2>&1 && eval "$(rbenv init - zsh)"

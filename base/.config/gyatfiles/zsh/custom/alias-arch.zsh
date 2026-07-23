@@ -11,8 +11,8 @@ alias gyatfiles="cd ~/gyatfiles"
 alias ..="cd .."
 
 # Misc config shortcuts
-alias vrc="nvim ~/gyatfiles/nvim/.config/nvim/"
-alias ctmux="nvim ~/gyatfiles/tmux/.tmux.conf"
+alias vrc="nvim ~/.config/nvim/"
+alias ctmux="nvim ~/.tmux.conf"
 alias czsh="nvim ~/.oh-my-zsh/custom"
 alias szsh="source ~/.zshrc"
 
