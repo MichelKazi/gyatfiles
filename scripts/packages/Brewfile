@@ -1,72 +1,274 @@
+tap "barutsrb/tap", "https://github.com/BarutSRB/homebrew-tap"
 tap "coursier/formulas"
 tap "dwijnand/extras"
-tap "felixkratz/formulae"
+tap "felixkratz/formulae", "https://github.com/FelixKratz/homebrew-formulae"
 tap "homebrew/bundle"
 tap "homebrew/services"
+tap "michelkazi/tap"
+tap "molovo/revolver"
 tap "nikitabobko/tap"
+tap "olets/tap"
 tap "osx-cross/arm"
 tap "osx-cross/avr"
+tap "peonping/tap", "https://github.com/PeonPing/homebrew-tap"
 tap "qmk/qmk"
+tap "rjyo/moshi", trusted: true
 tap "scalacenter/bloop"
+tap "supabase/tap"
+tap "uniclipboard/tap", "https://github.com/UniClipboard/homebrew-tap", trusted: true
+tap "wtfutil/wtfutil"
+tap "xcodesorg/made"
+# Static analysis and lint tool, for (ba)sh scripts
+brew "shellcheck"
+# Static checker for GitHub Actions workflow files
+brew "actionlint"
+# Automatic configure script builder
 brew "autoconf"
+# Cryptography and SSL/TLS Toolkit
 brew "openssl@3"
+# Official Amazon AWS command-line interface
 brew "awscli"
+# Clone of cat(1) with syntax highlighting and Git integration
+brew "bat"
+# Core application library for C
+brew "glib"
+# C/C++ and Java libraries for Unicode and globalization
+brew "icu4c@78"
+# OpenType text shaping engine
+brew "harfbuzz"
+# Development kit for the Java programming language
+brew "openjdk@21"
+# Google's own build tool
 brew "bazel"
+# Decentralized dependency manager for Cocoa
+brew "carthage"
+# Formatting tools for C, C++, Obj-C, Java, JavaScript, TypeScript
+brew "clang-format"
+# Tool for emulating mouse and keyboard events
+brew "cliclick"
+# Cross-platform make
+brew "cmake"
+# GNU File, Shell, and Text utilities
 brew "coreutils"
+# Modern diagram scripting language that turns text to diagrams
+brew "d2"
+# Good-lookin' diffs with diff-highlight and more
 brew "diff-so-fancy"
+# Utility to configure multi-display resolutions and arrangements
+brew "displayplacer"
+# Generate documentation for several programming languages
+brew "doxygen"
+# Simple, fast and user-friendly alternative to find
 brew "fd"
+# Audio codec
+brew "opus"
+# Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
+# Tool to install, manage and use Progressive Web Apps in Mozilla Firefox
+brew "firefoxpwa"
+# Fast and simple Node.js version manager
+brew "fnm"
+# Monitor a directory for changes and run a shell command
 brew "fswatch"
+# Command-line fuzzy finder written in Go
 brew "fzf"
+# GitHub command-line tool
 brew "gh"
+# OCR (Optical Character Recognition) engine
+brew "tesseract"
+# GIF image/animation creator/editor
 brew "gifsicle"
+# Distributed revision control system
 brew "git"
+# Syntax-highlighting pager for git and diff output
 brew "git-delta"
+# Git extension for versioning large files
+brew "git-lfs"
+# GNU typing tutor
 brew "gnu-typist"
+# GNU Privacy Guard (OpenPGP)
+brew "gnupg"
+# Open source programming language to build simple/reliable/efficient software
 brew "go"
+# Graph visualization software from AT&T and Bell Labs
+brew "graphviz"
+# Tool for glamorous shell scripts
 brew "gum"
+# Agent multiplexer that lives in your terminal
+brew "herdr"
+# User-friendly cURL replacement (command-line HTTP client)
+brew "httpie"
+# New file format for still image compression
+brew "jpeg-xl"
+# Tools and libraries to manipulate images in select formats
 brew "imagemagick"
+# Tool to capture still images from an iSight or other video source
+brew "imagesnap"
+# Lightweight and flexible command-line JSON processor
 brew "jq"
+# Kubernetes CLI To Manage Your Clusters In Style!
 brew "k9s"
+# Kubernetes command-line interface
 brew "kubernetes-cli"
+# Tool that can switch between kubectl contexts easily and create aliases
 brew "kubectx"
+# Simple terminal UI for git commands
 brew "lazygit"
+# Cross-platform TUI database management tool
+brew "lazysql"
+# Implementation of Microsoft's Media Transfer Protocol (MTP)
+brew "libmtp"
+# Library for complex text layout
+brew "libraqm"
+# GNOME XML library
 brew "libxml2"
+# Powerful, lightweight programming language
 brew "lua"
+# Package manager for the Lua programming language
 brew "luarocks"
-brew "memcached", restart_service: true
+# High performance, distributed memory object caching system
+brew "memcached", restart_service: :changed
+# UPnP IGD client library and daemon
+brew "miniupnpc"
+# Protocol buffers (Google's data interchange format)
+brew "protobuf"
+# Remote terminal application
+brew "mosh"
+# Cryptography and SSL/TLS Toolkit
 brew "openssl@1.1"
+# Open source relational database management system
 brew "mysql@5.7", link: true
+# Incremental parsing library
 brew "tree-sitter"
+# Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
+# Small build system for use with gyp or CMake
+brew "ninja"
+# Port scanning utility for large networks
+brew "nmap"
+# Open-source, cross-platform JavaScript runtime environment
+brew "node"
+# Development kit for the Java programming language
 brew "openjdk@11"
+# Swiss-army knife of markup format conversion
+brew "pandoc"
+# Shell command parallelization utility
 brew "parallel"
+# Friendly PIL fork (Python Imaging Library)
+brew "pillow"
+# Execute binaries from Python packages in isolated environments
 brew "pipx"
+# Package compiler and linker metadata toolkit
+brew "pkgconf"
+# Object-relational database system
 brew "postgresql@14"
+# Convert bitmaps to vector graphics
+brew "potrace"
+# Theme for zsh
+brew "powerlevel10k"
+# Framework for managing multi-language pre-commit hooks
+brew "pre-commit"
+# Track commands progress in a compact one-line format
+brew "progressline"
+# Pretty, minimal and fast ZSH prompt
+brew "pure"
+# Python version management
+brew "pyenv", args: ["HEAD"]
+# Static type checker for Python
+brew "pyright"
+# Tools for and transforming and inspecting PDF files
+brew "qpdf"
+# Cross-platform application and UI framework
 brew "qt"
+# Ruby version manager
 brew "rbenv"
+# Rsync for cloud storage
+brew "rclone"
+# Search tool like grep and The Silver Searcher
 brew "ripgrep"
+# Command-line deletion tool focused on safety, ergonomics, and performance
+brew "rm-improved"
+# CLI for managing and maintaining data graphs with Apollo Studio
+brew "rover"
+# CLI proxy to minimize LLM token consumption
+brew "rtk"
+# Rust toolchain installer
 brew "rustup"
-brew "scala"
+# Interactive find and replace in the terminal
+brew "scooter"
+# Smart session manager for the terminal
+brew "sesh"
+# Compressed read-only file system for Linux
+brew "squashfs"
+# Non-interactive SSH password auth
+brew "sshpass"
+# Organize software neatly under a single directory tree (e.g. /usr/local)
 brew "stow"
+# Tool to enforce Swift style and conventions
 brew "swiftlint"
+# Code-search similar to ack
 brew "the_silver_searcher"
+# Programmatically correct mistyped console commands
 brew "thefuck"
+# Framework for scalable cross-language services development
 brew "thrift"
+# Terminal multiplexer
 brew "tmux"
+# Sends magic packets to wake up network-devices
+brew "wakeonlan"
+# Personal information dashboard for your terminal
+brew "wtfutil"
+# Little beautifier tool for xcodebuild
 brew "xcbeautify"
+# Build server protocol implementation for integrating Xcode with sourcekit-lsp
 brew "xcode-build-server"
+# Generate your Xcode project from a spec file and your folder structure
+brew "xcodegen"
+# Shell extension to navigate your filesystem faster
 brew "zoxide"
+# Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
+# Fish shell like syntax highlighting for zsh
 brew "zsh-syntax-highlighting"
-brew "coursier/formulas/coursier"
-brew "dwijnand/extras/sbtx", args: ["HEAD"]
-brew "felixkratz/formulae/borders"
-brew "qmk/qmk/qmk"
-cask "aerospace"
+# Portable daemon + CLI that bridges AI coding agents to the Moshi mobile app
+brew "rjyo/moshi/moshi-hook"
+# Supabase CLI
+brew "supabase/tap/supabase", trusted: true
+# Privacy-first cross-device clipboard sync CLI
+brew "uniclipboard/tap/uniclipboard", link: false, trusted: true
+# AeroSpace is an i3-like tiling window manager for macOS
+cask "nikitabobko/tap/aerospace", trusted: true
+# Enable Windows-like alt-tab
 cask "alt-tab"
+# Distribution of the Python and R programming languages for scientific computing
+cask "anaconda"
+# Online diagram software
+cask "drawio"
+# Terminal emulator that uses platform-native UI and GPU acceleration
+cask "ghostty"
 cask "graphiql"
+# Native remote workstation host — stream your desktop to any client, low latency
+cask "michelkazi/tap/helios", trusted: true
+# Open-source keystroke visualiser
+cask "keycastr"
+# Customise mouse behavior
+cask "linearmouse"
+# Tool to control external monitor brightness & volume
 cask "monitorcontrol"
+# Reverse proxy, secure introspectable tunnels to localhost
+cask "ngrok"
+cask "omniwm"
+# Toolbox companion for QMK Firmware
 cask "qmk-toolbox"
+# Cross-device clipboard syncing tool
+cask "uniclipboard"
+# GPU-accelerated cross-platform terminal emulator and multiplexer
 cask "wezterm"
+# Open-source version of the X.Org X Window System
 cask "xquartz"
+# YouTube music client
+cask "ytmdesktop-youtube-music"
+cargo "cargo-release"
+cargo "create-tauri-app"
+cargo "lsd"
+uv "graphifyy[bedrock]"
