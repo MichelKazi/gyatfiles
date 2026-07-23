@@ -4,6 +4,9 @@
 # tmux: tpm-managed plugins (runtime artifacts, not config)
 tmux/.tmux/plugins/
 
+# tmux: work-only rail overrides (Strava VPN/cloud). Template is .example.
+tmux/.tmux.work.conf
+
 # nvim: lazy plugin lockfile differs per machine — keep but allow per-machine drift
 # (tracked; uncomment next line to make machine-local instead)
 # nvim/.config/nvim/lazy-lock.json

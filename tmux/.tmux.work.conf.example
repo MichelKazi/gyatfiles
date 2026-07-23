@@ -1,0 +1,33 @@
+# ─── Work rail overrides — TEMPLATE ──────────────────────────────────────────
+# Copy to .tmux.work.conf (gitignored) on machines with work VPN/cloud tooling.
+# .tmux.macos.conf sources the real file via `source-file -q` (silent if absent),
+# so personal machines need no changes. This layers work-only status segments
+# and their click handlers onto the shared Vector rail.
+#
+# Requires helper scripts in ~/.local/share/tmux/: warp-status.sh, aws-status.sh
+# (each no-ops when its CLI is missing). Adjust segments/ranges to your tooling.
+#
+# tmux allows one handler per key and one status-format[1], so REDEFINE both
+# wholesale — base values first, then append your work segments/ranges.
+
+# Rail: [ MAC ] + sessions ... TS  WARP  AWS  metrics
+set -g status-format[1] "#[align=left]#[range=user|menu]#{?client_prefix,#[bg=#f0b429]#[fg=#05080f]#[bold],#[fg=#f0b429]#[bold]} MAC #[norange]#[default] #(~/.local/share/tmux/vector-sessions.sh '#{client_session}' '#{client_width}')#[align=right]#(~/.local/share/tmux/vector-metrics.sh)  #(~/.local/share/tmux/ts-status.sh)  #(~/.local/share/tmux/warp-status.sh)  #(~/.local/share/tmux/aws-status.sh --vector) "
+
+# Click handler: base ranges + work ranges.
+#   warp-up / ts-down -> `vpn ts` (leave WARP, bring Tailscale up)
+#   warp-down         -> WARP reconnect (Okta re-auth)
+#   aws-down          -> aws-claude re-auth
+bind-key -n MouseDown1Status \
+  if-shell -F '#{m:sess_*,#{mouse_status_range}}' \
+    'set -gF @clicked_range "#{mouse_status_range}" ; run-shell "~/.local/share/tmux/session-switch.sh"' \
+    { if-shell -F '#{==:#{mouse_status_range},menu}' \
+        'run-shell "~/.local/share/tmux/session-picker.sh"' \
+        { if-shell -F '#{==:#{mouse_status_range},ssh}' \
+            'display-popup -E -w 60% -h 60% -b rounded -S "fg=#f0b429" -T " VECTOR//通信 " "~/.local/share/tmux/ssh-picker.sh"' \
+            { if-shell -F '#{||:#{==:#{mouse_status_range},warp-up},#{==:#{mouse_status_range},ts-down}}' \
+                'display-popup -E -w 80% -h 60% -b rounded -S "fg=#34d399" -T " VECTOR//尾 " "~/bin/vpn ts"' \
+                { if-shell -F '#{==:#{mouse_status_range},warp-down}' \
+                    'display-popup -E -w 80% -h 60% -b rounded -S "fg=#ff5d73" -T " VECTOR//WARP " "warp-cli connect; sleep 3; warp-cli status"' \
+                    { if-shell -F '#{==:#{mouse_status_range},aws-down}' \
+                        'display-popup -E -w 80% -h 60% -b rounded -S "fg=#ff5d73" -T " VECTOR//雲 " "aws-claude --force"' \
+                        'select-window -t=' } } } } }
