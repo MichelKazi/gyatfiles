@@ -7,18 +7,30 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/bin/zsh</string>
-        <string>-c -l</string>
-        <string>$HOME/gyatfiles/scripts/sync-installed-packages.sh</string>
-    </array>
+      <string>/bin/zsh</string>
+      <string>-lc</string>
+      <string>$HOME/gyatfiles/scripts/sync-installed-packages.sh</string>
     </array>
 
-    <key>StartInterval</key>
-    <integer>86400</integer> <!-- 86400 seconds is 24 hours -->
+    <!-- Run weekly: Sunday 09:00. If the Mac was asleep at the trigger,
+         launchd fires it once on next wake. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+      <key>Weekday</key>
+      <integer>0</integer>
+      <key>Hour</key>
+      <integer>9</integer>
+      <key>Minute</key>
+      <integer>0</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/syncinstalledpackages.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/syncinstalledpackages.err</string>
 
     <key>RunAtLoad</key>
-    <true/>
-
+    <false/>
     <key>KeepAlive</key>
     <false/>
   </dict>
