@@ -4,6 +4,7 @@ set -euo pipefail
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/gyatfiles}"
 DRY_RUN=0
+STOW_PACKAGES=(base linux)
 
 for arg in "$@"; do
   case "$arg" in
@@ -24,33 +25,36 @@ require() {
   command -v "$1" >/dev/null 2>&1 || { echo "Error: required command missing: $1"; exit 1; }
 }
 
-BASE_CONFLICTS=0
+STOW_CONFLICTS=0
 backup_stow_conflicts() {
-  local base_dir="$DOTFILES_DIR/base"
   local backup_dir=""
-  local source relative target
+  local package package_dir source relative target
 
   shopt -s dotglob globstar nullglob
-  for source in "$base_dir"/**; do
-    [[ -f "$source" || -L "$source" ]] || continue
-    relative="${source#"$base_dir"/}"
-    target="$HOME/$relative"
-    [[ -e "$target" || -L "$target" ]] || continue
-    if [[ "$target" -ef "$source" ]]; then
-      continue
-    fi
+  for package in "${STOW_PACKAGES[@]}"; do
+    package_dir="$DOTFILES_DIR/$package"
+    [[ -d "$package_dir" ]] || { echo "Error: Stow package missing: $package_dir"; exit 1; }
+    for source in "$package_dir"/**; do
+      [[ -f "$source" || -L "$source" ]] || continue
+      relative="${source#"$package_dir"/}"
+      target="$HOME/$relative"
+      [[ -e "$target" || -L "$target" ]] || continue
+      if [[ "$target" -ef "$source" ]]; then
+        continue
+      fi
 
-    BASE_CONFLICTS=$((BASE_CONFLICTS + 1))
-    if [[ $DRY_RUN -eq 1 ]]; then
-      echo "[dry-run] would back up conflicting target: $target"
-      continue
-    fi
+      STOW_CONFLICTS=$((STOW_CONFLICTS + 1))
+      if [[ $DRY_RUN -eq 1 ]]; then
+        echo "[dry-run] would back up conflicting target: $target"
+        continue
+      fi
 
-    if [[ -z "$backup_dir" ]]; then
-      backup_dir="$HOME/.local/state/gyatfiles-backups/$(date +%Y%m%d-%H%M%S)"
-    fi
-    mkdir -p "$backup_dir/$(dirname "$relative")"
-    mv "$target" "$backup_dir/$relative"
+      if [[ -z "$backup_dir" ]]; then
+        backup_dir="$HOME/.local/state/gyatfiles-backups/$(date +%Y%m%d-%H%M%S)"
+      fi
+      mkdir -p "$backup_dir/$(dirname "$relative")"
+      mv "$target" "$backup_dir/$relative"
+    done
   done
   shopt -u dotglob globstar nullglob
 
@@ -125,16 +129,16 @@ done
 echo "=== Stowing shared config ==="
 backup_stow_conflicts
 if [[ $DRY_RUN -eq 1 ]]; then
-  if [[ $BASE_CONFLICTS -gt 0 ]]; then
-    echo "[dry-run] would stow base after backing up conflicts"
+  if [[ $STOW_CONFLICTS -gt 0 ]]; then
+    echo "[dry-run] would stow ${STOW_PACKAGES[*]} after backing up conflicts"
   elif command -v stow >/dev/null 2>&1; then
-    stow -n -v -d "$DOTFILES_DIR" -t "$HOME" base
+    stow -n -v -d "$DOTFILES_DIR" -t "$HOME" "${STOW_PACKAGES[@]}"
   else
-    echo "[dry-run] would stow base into $HOME after installing stow"
+    echo "[dry-run] would stow ${STOW_PACKAGES[*]} into $HOME after installing stow"
   fi
 else
   require stow
-  stow -d "$DOTFILES_DIR" -t "$HOME" base
+  stow -d "$DOTFILES_DIR" -t "$HOME" "${STOW_PACKAGES[@]}"
 fi
 
 echo "=== Tmux Plugin Manager ==="

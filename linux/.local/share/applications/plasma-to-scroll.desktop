@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Switch to Scroll
+Comment=Switch this session from Plasma to the Scroll compositor
+Exec=plasma-to-scroll
+Icon=system-switch-user
+Terminal=false
+Categories=System;
+OnlyShowIn=KDE;

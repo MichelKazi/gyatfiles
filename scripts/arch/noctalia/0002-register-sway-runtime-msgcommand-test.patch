@@ -1,0 +1,22 @@
+--- a/meson.build
++++ b/meson.build
+@@ -1162,7 +1162,19 @@
+ )
+
+ test('process', process_test)
++
++sway_runtime_msgcommand_test = executable('sway_runtime_msgcommand_test',
++  sources: files(
++    'tests/sway_runtime_msgcommand_test.cpp',
++    'src/compositors/sway/sway_runtime.cpp',
++    'src/core/process/process.cpp',
++    'src/core/log.cpp'
++  ),
++  include_directories: _noctalia_inc,
++)
+
++test('sway_runtime_msgcommand', sway_runtime_msgcommand_test)
++
+ battery_hook_state_test = executable('battery_hook_state_test',
+   sources: files(
+     'tests/battery_hook_state_test.cpp',

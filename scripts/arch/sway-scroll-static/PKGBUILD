@@ -1,0 +1,151 @@
+pkgname=sway-scroll-static
+pkgver=1.12.17
+pkgrel=1
+pkgdesc='Scroll compositor with Wayland 1.24 linked statically'
+arch=('x86_64')
+url='https://github.com/dawsers/scroll'
+license=('MIT')
+depends=(
+  'cairo'
+  'gdk-pixbuf2'
+  'glibc'
+  'glslang'
+  'json-c'
+  'lcms2'
+  'libcap'
+  'libdisplay-info'
+  'libdrm'
+  'libevdev'
+  'libffi'
+  'libglvnd'
+  'libinput'
+  'libliftoff'
+  'libxcb'
+  'libxkbcommon'
+  'lua'
+  'opengl-driver'
+  'pango'
+  'pcre2'
+  'pixman'
+  'seatd'
+  'systemd-libs'
+  'vulkan-icd-loader'
+  'xcb-util-errors'
+  'xcb-util-renderutil'
+  'xcb-util-wm'
+)
+makedepends=(
+  'expat'
+  'libxml2'
+  'meson'
+  'scdoc'
+  'vulkan-headers'
+  'xorgproto'
+  'xorg-xwayland'
+)
+optdepends=(
+  'foot: terminal used by the default configuration'
+  'polkit: privilege control when not using the seatd service'
+  'swaybg: wallpaper'
+  'swayidle: idle management'
+  'swaylock: screen locking'
+  'wmenu: application launcher used by the default configuration'
+  'xdg-desktop-portal-gtk: default file picker portal'
+  'xdg-desktop-portal-wlr: screen sharing and screenshot portal'
+  'xorg-xwayland: X11 application support'
+)
+provides=("sway-scroll=$pkgver" 'wayland-compositor')
+conflicts=('sway-scroll')
+install='sway-scroll-static.install'
+backup=(
+  'etc/scroll/config'
+  'etc/scroll/config.d/50-systemd-user.conf'
+)
+source=(
+  "scroll-$pkgver.tar.gz::https://github.com/dawsers/scroll/archive/refs/tags/$pkgver.tar.gz"
+  'wayland-1.24.0.tar.xz::https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.24.0/downloads/wayland-1.24.0.tar.xz'
+  'wayland-protocols-1.48.tar.xz::https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.48/downloads/wayland-protocols-1.48.tar.xz'
+  '50-systemd-user.conf'
+  'scroll-portals.conf'
+)
+b2sums=(
+  '9a845428801640520650183520173c2693bfff2544562e443c556040d596277dfe25aec6dc9f07bc14655af14a6ab837ebe5c8631882b49f3a79c3676f812102'
+  '7ac6ac1f33cb2cae60e4058478655eeabd4f8f8e0fe07f6b9b386967ed4b31bdaac571dc2b812f3189534e3e53797822ca39f829207e45c24b494f039f82a836'
+  '8e3b6797aa10e668b0c950e5ea4d234d0da756297bfe45f5a2fbb8f280ae81261ec0efc48a334d2c57cbe57a94cddce7a3e95b33abc88a9c67508a90120f9297'
+  '02ebd4155f26a438be7a7b5fc7aa93ee8636584ee17e2ba1832ba3da7bfea1c405a70a18c2805327975b149d6f39e6b8529848e3e75b57d88fdbeabb36ef1499'
+  'cdba5fd2988b7ead8b264d5b41f1c7adb47a6487be1e3a4ce98c0af2094d9964f4bc364237c4437014be18061f067aa741b0382f21365be497e06b189c5c7728'
+)
+
+prepare() {
+  local fallback_dir="$srcdir/scroll-$pkgver/subprojects/wlroots/subprojects"
+
+  cp -aT "$srcdir/wayland-1.24.0" "$fallback_dir/wayland"
+  cp -aT "$srcdir/wayland-protocols-1.48" "$fallback_dir/wayland-protocols"
+}
+
+build() {
+  arch-meson "$srcdir/build" "$srcdir/scroll-$pkgver" \
+    --force-fallback-for=wayland,wayland-protocols \
+    -Db_ndebug=true \
+    -Dsd-bus-provider=libsystemd \
+    -Dwayland:default_library=static \
+    -Dwayland:documentation=false \
+    -Dwayland:tests=false \
+    -Dwayland-protocols:tests=false \
+    -Dwlroots:werror=false \
+    -Dwerror=false
+  meson compile -C "$srcdir/build"
+}
+
+check() {
+  local binary
+  local binaries=(
+    'sway/scroll'
+    'swaybar/scrollbar'
+    'swaymsg/scrollmsg'
+    'swaynag/scrollnag'
+  )
+
+  [[ -x "$srcdir/build/sway/scroll" ]] || {
+    printf 'Missing expected Scroll binary\n' >&2
+    return 1
+  }
+
+  for binary in "${binaries[@]}"; do
+    [[ -x "$srcdir/build/$binary" ]] || continue
+    if readelf -d "$srcdir/build/$binary" |
+      awk '/NEEDED/ && /libwayland-[[:alnum:]_-]+\.so/ { found=1 } END { exit !found }'; then
+      printf 'Dynamic Wayland dependency found in %s\n' "$binary" >&2
+      return 1
+    fi
+  done
+}
+
+package() {
+  local leaked_path
+  local forbidden_paths=(
+    "$pkgdir/usr/bin/wayland-scanner"
+    "$pkgdir/usr/include/wayland*.h"
+    "$pkgdir/usr/lib/libwayland*"
+    "$pkgdir/usr/lib/pkgconfig/wayland*.pc"
+    "$pkgdir/usr/share/wayland"
+    "$pkgdir/usr/share/wayland-protocols"
+  )
+
+  meson install -C "$srcdir/build" --destdir "$pkgdir" --skip-subprojects
+  install -Dm644 "$srcdir/scroll-$pkgver/LICENSE" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 "$srcdir/scroll-$pkgver/README.md" \
+    "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 "$srcdir/50-systemd-user.conf" \
+    "$pkgdir/etc/scroll/config.d/50-systemd-user.conf"
+  install -Dm644 "$srcdir/scroll-portals.conf" \
+    "$pkgdir/usr/share/xdg-desktop-portal/scroll-portals.conf"
+
+  for leaked_path in "${forbidden_paths[@]}"; do
+    if compgen -G "$leaked_path" >/dev/null; then
+      printf 'Vendored Wayland install artifact found: %s\n' "$leaked_path" >&2
+      return 1
+    fi
+  done
+}

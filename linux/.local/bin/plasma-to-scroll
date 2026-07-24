@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+
+exec steamosctl switch-to-desktop-mode scroll.desktop
