@@ -1,0 +1,15 @@
+#!/bin/sh
+# Debounce gesture commands: ignore repeat invocations of the same command
+# within the window (ms). lisgd fires flaky multi-finger swipes as a burst;
+# rapid identical scroll commands (e.g. toggle_size) can crash the compositor.
+# Usage: gdebounce <key> <cmd...>   -- <key> tags the lockfile per action.
+WINDOW_MS=600
+key="$1"; shift
+lock="/tmp/gdebounce-$key"
+now=$(date +%s%3N)
+if [ -f "$lock" ]; then
+    last=$(cat "$lock" 2>/dev/null || echo 0)
+    [ $((now - last)) -lt "$WINDOW_MS" ] && exit 0
+fi
+echo "$now" > "$lock"
+exec "$@"

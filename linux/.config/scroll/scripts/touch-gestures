@@ -1,13 +1,38 @@
 #!/bin/sh
-set -eu
-
+# Touchscreen gestures via lisgd (scroll has no native touchscreen gestures).
+#
+# Design: edges = system/nav (iOS-style edge swipes), 2-finger = window mgmt.
+# All directions/edges measured empirically on the Deck OLED in landscape. Panel
+# is native portrait rotated 90 -- measured, NOT computed, NOT via lisgd -o.
+# The 90 rotation is consistent across all four edges (verified 2026-07-24):
+#   DIRECTION: physical up=LR, down=RL, L-to-R=UD, R-to-L=DU.
+#   EDGE:      physical bottom=lisgd Left, left=Top, right=Bottom, top=Right.
+#
+# Reliability: 2-finger vertical 100%; 1-finger edge swipes clean (1 finger
+# cannot miscount); 2-finger horizontal ~60% -> used only for reversible toggle
+# (maximize), where an occasional miss is harmless.
+#
+# Gesture map:
+#   2-finger up            (2,LR,*)  workspace prev      [primary nav, 100%]
+#   2-finger down          (2,RL,*)  workspace next      [primary nav, 100%]
+#   2-finger left/right    (2,*,*)   toggle_size (maximize) [reversible toggle]
+#   bottom-edge up         (1,LR,L)  overview toggle
+#   left-edge  inward      (1,UD,T)  workspace prev
+#   right-edge inward      (1,DU,B)  workspace next
+#   top-edge   down        (1,RL,R)  noctalia control-center [iOS-style]
+#
+# lisgd/noctalia need the wayland env; scrollmsg finds scroll via SWAYSOCK which
+# it inherits as a scroll child. noctalia msg needs WAYLAND_DISPLAY explicitly.
 command -v lisgd >/dev/null 2>&1 || exit 0
 pgrep -x lisgd >/dev/null 2>&1 && exit 0
 
-exec lisgd \
-    -d /dev/input/by-path/platform-AMDI0010:01-event \
-    -w 1280 -h 800 \
-    -g '3,LR,L,*,R,scrollmsg "workspace prev"' \
-    -g '3,RL,R,*,R,scrollmsg "workspace next"' \
-    -g '3,DU,N,*,R,scrollmsg "scale_workspace overview"' \
-    -g '3,UD,N,*,R,scrollmsg "scale_workspace reset"'
+CC="env WAYLAND_DISPLAY=wayland-1 XDG_RUNTIME_DIR=/run/user/1000 noctalia msg panel-toggle control-center"
+
+exec lisgd -r 45 -m 900 -t 60 \
+    -d /dev/input/by-path/platform-AMDI0010:01-event -w 1280 -h 800 \
+    -g "2,LR,*,*,R,scrollmsg workspace prev" \
+    -g "2,RL,*,*,R,scrollmsg workspace next" \
+    -g "1,LR,L,*,R,scrollmsg scale_workspaces toggle" \
+    -g "1,UD,T,*,R,scrollmsg workspace prev" \
+    -g "1,DU,B,*,R,scrollmsg workspace next" \
+    -g "1,RL,R,*,R,$CC"

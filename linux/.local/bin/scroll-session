@@ -1,0 +1,63 @@
+#!/bin/sh
+# Scroll session launcher with preflight + Plasma fallback.
+#
+# SDDM autologin execs this instead of `scroll` directly. It health-checks the
+# scroll environment; on any failure it execs Plasma so Desktop Mode still lands
+# in A desktop rather than bouncing to Game Mode. If scroll passes preflight but
+# crashes early at runtime, it also falls back.
+#
+# Referenced from a wayland-sessions .desktop (Exec=scroll-session).
+# Logs to ~/.local/state/scroll-session.log for post-mortem.
+set -u
+
+LOG="${XDG_STATE_HOME:-$HOME/.local/state}/scroll-session.log"
+mkdir -p "$(dirname "$LOG")"
+log() { printf '%s %s\n' "$(date +%H:%M:%S)" "$1" >> "$LOG"; }
+
+fallback() {
+    log "FALLBACK to Plasma: $1"
+    exec /usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-wayland
+}
+
+log "=== scroll-session start ==="
+
+# 1. rwfus overlay mounted? (the failure that hid /usr and wiped scroll)
+if ! findmnt -no FSTYPE /usr 2>/dev/null | grep -q overlay; then
+    log "WARN: /usr not an overlay (rwfus not mounted) - scroll may be missing"
+fi
+
+# 2. scroll binary present + executable
+command -v scroll >/dev/null 2>&1 || fallback "scroll binary not found"
+[ -x "$(command -v scroll)" ] || fallback "scroll not executable"
+
+# 3. config parses. scroll -C prints seat/DRM errors when headless (not parse
+#    errors), so match only real config errors.
+CFG="$HOME/.config/scroll/config"
+if [ -f "$CFG" ]; then
+    if scroll -c "$CFG" -C 2>&1 | grep -qiE 'error.*(expected|unknown|invalid|unexpected|cannot)'; then
+        fallback "scroll config parse error"
+    fi
+fi
+
+# 4. referenced startup binaries (best-effort; log-only)
+for b in lisgd scrollmsg; do
+    command -v "$b" >/dev/null 2>&1 || log "WARN: $b missing (gestures/ipc degraded)"
+done
+
+log "preflight OK, launching scroll"
+
+# 5. run scroll; if it exits abnormally within GRACE seconds, fall back.
+GRACE=8
+START=$(date +%s)
+scroll "$@"
+RC=$?
+END=$(date +%s)
+ELAPSED=$((END - START))
+
+log "scroll exited rc=$RC after ${ELAPSED}s"
+if [ "$RC" -ne 0 ] && [ "$ELAPSED" -lt "$GRACE" ]; then
+    fallback "scroll exited rc=$RC after only ${ELAPSED}s (likely launch failure)"
+fi
+
+log "scroll session ended normally"
+exit "$RC"
