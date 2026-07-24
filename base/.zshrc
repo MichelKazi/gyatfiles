@@ -3,8 +3,11 @@ export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 
 [[ $- == *i* ]] || return
 
-export ZSH="$HOME/.oh-my-zsh"
-[[ -r "$ZSH/oh-my-zsh.sh" ]] || [[ ! -r /usr/share/oh-my-zsh/oh-my-zsh.sh ]] || ZSH=/usr/share/oh-my-zsh
+if [[ "$OSTYPE" == linux* && -r /usr/share/oh-my-zsh/oh-my-zsh.sh ]]; then
+  export ZSH=/usr/share/oh-my-zsh
+else
+  export ZSH="$HOME/.oh-my-zsh"
+fi
 ZSH_THEME=""
 plugins=(git)
 [[ -r "$ZSH/oh-my-zsh.sh" ]] && source "$ZSH/oh-my-zsh.sh"
