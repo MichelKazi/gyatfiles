@@ -29,11 +29,13 @@ client.focused_inactive #45475a #1e1e2e #bac2de #45475a #45475a
 client.unfocused #313244 #181825 #7f849c #313244 #313244
 client.urgent #f38ba8 #1e1e2e #cdd6f4 #f38ba8 #f38ba8
 
+maximize_if_single true
 animations {
     enabled yes
     default yes 220 var simple [0.2 0.8 0.2 1]
     workspace_switch yes 260 var simple [0.2 0.8 0.2 1]
     window_fullscreen yes 260 var simple [0.2 0.8 0.2 1]
+    overview yes 300 var simple [0.2 0.9 0.1 1]
 }
 
 input type:touchpad {
@@ -84,6 +86,15 @@ bindsym $mod+slash layout_transpose
 bindsym $mod+comma scale_workspace overview
 bindsym $mod+f floating toggle
 bindsym $mod+space fullscreen toggle
+bindsym F1 toggle_size active 1.0 1.0
+bindsym F9 move down
+bindsym F8 move up
+bindsym F7 move right
+bindsym F6 move left
+bindsym F5 scale_workspace reset
+bindsym F4 scale_workspaces toggle
+bindsym F3 workspace next
+bindsym F2 workspace prev
 
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
@@ -190,3 +201,10 @@ exec sh -lc 'command -v noctalia >/dev/null 2>&1 && exec noctalia'
 exec $scroll_scripts/touch-gestures
 
 include /etc/scroll/config.d/*
+
+# Steam + extest. Steam Input drives the desktop pointer (lizard mode); extest
+# bridges its X11 XTEST output to a uinput device wlroots reads, else the cursor
+# freezes when Steam runs. Idempotent: only launch if not already up.
+exec sh -c '[ -f "$HOME/.local/lib/libextest.so" ] && ! pgrep -x steam >/dev/null && LD_PRELOAD="$HOME/.local/lib/libextest.so" exec /usr/bin/steam -silent'
+
+include ~/.config/scroll/noctalia
