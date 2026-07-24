@@ -1,0 +1,28 @@
+#!/bin/sh
+set -eu
+
+action=${1:-}
+case "$action" in
+    focus|window|workspace) ;;
+    *) exit 2 ;;
+esac
+
+outputs=$(scrollmsg -t get_outputs)
+current=$(printf '%s\n' "$outputs" | jq -er '.[] | select(.active and .focused) | .name')
+target=$(printf '%s\n' "$outputs" | jq -er --arg current "$current" '
+    [.[] | select(.active)] as $outputs
+    | ($outputs | map(.name) | index($current)) as $index
+    | if $index == null or ($outputs | length) == 0 then empty
+      else $outputs[(($index + 1) % ($outputs | length))].name
+      end
+')
+
+if [ "$current" = "$target" ]; then
+    exit 0
+fi
+
+case "$action" in
+    focus) scrollmsg focus output "$target" >/dev/null ;;
+    window) scrollmsg move container to output "$target" >/dev/null ;;
+    workspace) scrollmsg move workspace to output "$target" >/dev/null ;;
+esac

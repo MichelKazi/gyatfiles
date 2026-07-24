@@ -1,0 +1,47 @@
+# SteamOS 3.8 build of lisgd (upstream: Miles Alan <m@milesalan.com>,
+# https://git.sr.ht/~mil/lisgd), pinned to release tag 0.4.0.
+#
+# Built WITHOUT_X11 and WITHOUT_WAYLAND: those switches only gate lisgd's
+# optional auto-detection of screen geometry/rotation via an X11 or Wayland
+# client connection (see lisgd.c around WITH_WAYLAND/WITH_X11 -- core
+# gesture recognition is plain libinput touch events and needs neither).
+# This daemon runs headless under scroll and is launched with explicit
+# -w/-h flags, so the auto-detect path is dead code we'd rather not link:
+# skips an extra Wayland client connection for a background process that
+# doesn't need one, and keeps it clear of any Xwayland interaction (a stuck
+# Xwayland pointer grab was the confirmed root cause of a separate cursor
+# bug this milestone -- no reason to give this daemon an X11 dependency).
+#
+# depends resolved from SteamOS 3.8's own repos at audit time, matching the
+# sibling sway-scroll-static/noctalia-steamdeck packages in this repo.
+
+pkgname=lisgd
+pkgver=0.4.0
+pkgrel=1
+pkgdesc='libinput synthetic gesture daemon for touchscreens, built without X11/Wayland client support'
+arch=('x86_64')
+url='https://git.sr.ht/~mil/lisgd'
+license=('MIT')
+depends=('libinput' 'glibc')
+source=("lisgd-$pkgver.tar.gz::https://git.sr.ht/~mil/lisgd/archive/$pkgver.tar.gz")
+b2sums=('0eef3cc2f3ead4e44a67d5ae5e3e3edfc11eb3a98792e09c7e9dc7ad155ad27dcccfb6d3c5fbd9c3cfc5fb20f8b9b4e9cc2155611d5c07451730151457f99673')
+
+build() {
+  cd "$pkgname-$pkgver"
+  make WITHOUT_X11=1 WITHOUT_WAYLAND=1
+}
+
+check() {
+  local binary="$srcdir/$pkgname-$pkgver/lisgd"
+  [[ -x "$binary" ]] || { printf 'Missing expected lisgd binary\n' >&2; return 1; }
+  if readelf -d "$binary" | grep -qE 'NEEDED.*lib(X11|wayland-client)'; then
+    printf 'lisgd binary unexpectedly links X11/Wayland\n' >&2
+    return 1
+  fi
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  make WITHOUT_X11=1 WITHOUT_WAYLAND=1 PREFIX="/usr" DESTDIR="$pkgdir" install
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

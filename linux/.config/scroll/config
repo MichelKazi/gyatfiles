@@ -1,0 +1,192 @@
+set $mod Mod1
+set $cmd Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+set $scroll_scripts ~/.config/scroll/scripts
+set $shell_ipc noctalia msg
+
+font pango:JetBrainsMono Nerd Font 10
+default_border pixel 2
+default_floating_border pixel 2
+gaps inner 15
+gaps outer 15
+focus_follows_mouse no
+focus_wrapping yes
+workspace_auto_back_and_forth no
+workspace_layout horizontal
+layout_default_mode h after focus nocenter_horiz nocenter_vert reorder_auto
+layout_default_width 0.5
+layout_widths [0.33333333 0.5 0.66666667 1.0]
+layout_heights [0.33333333 0.5 0.66666667 1.0]
+cycle_size_wrap true
+scratchpad_minimize true
+xwayland enable
+
+client.focused #89b4fa #1e1e2e #cdd6f4 #89b4fa #89b4fa
+client.focused_inactive #45475a #1e1e2e #bac2de #45475a #45475a
+client.unfocused #313244 #181825 #7f849c #313244 #313244
+client.urgent #f38ba8 #1e1e2e #cdd6f4 #f38ba8 #f38ba8
+
+animations {
+    enabled yes
+    default yes 220 var simple [0.2 0.8 0.2 1]
+    workspace_switch yes 260 var simple [0.2 0.8 0.2 1]
+    window_fullscreen yes 260 var simple [0.2 0.8 0.2 1]
+}
+
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+    middle_emulation enabled
+}
+
+# Three-finger swipes continuously scroll the layout. Four-finger gestures are
+# discrete so they do not override the scrolling gesture.
+gesture_scroll_enable true
+gesture_scroll_fingers 3
+gesture_scroll_sensitivity 1.5
+gesture_scroll_sensitivity_mouse 1.25
+bindgesture swipe:4:right workspace prev
+bindgesture swipe:4:left workspace next
+bindgesture swipe:4:up scale_workspace overview
+bindgesture swipe:4:down scale_workspace reset
+
+floating_modifier $mod normal
+
+# Preserve AeroSpace's suppression of the platform hide shortcuts. Scroll has no
+# hide action, so these bindings deliberately consume the keypresses.
+bindsym $cmd+h nop
+bindsym $cmd+Shift+h nop
+bindsym $mod+BackSpace kill
+
+# Keep Noctalia controls on Super so the Alt-based AeroSpace parity map remains
+# unchanged.
+bindsym $cmd+space exec $shell_ipc panel-toggle launcher
+bindsym $cmd+s exec $shell_ipc panel-toggle control-center
+bindsym $cmd+comma exec $shell_ipc settings-toggle
+bindsym $cmd+Shift+BackSpace exec ~/.local/bin/scroll-to-gaming
+bindsym --locked XF86AudioRaiseVolume exec $shell_ipc volume-up
+bindsym --locked XF86AudioLowerVolume exec $shell_ipc volume-down
+bindsym --locked XF86AudioMute exec $shell_ipc volume-mute
+bindsym --locked XF86MonBrightnessUp exec $shell_ipc brightness-up
+bindsym --locked XF86MonBrightnessDown exec $shell_ipc brightness-down
+
+bindsym $mod+grave exec $scroll_scripts/launch-app terminal
+bindsym $mod+o exec $scroll_scripts/launch-app obsidian
+bindsym $mod+b exec $scroll_scripts/launch-app browser
+bindsym $mod+s exec $scroll_scripts/launch-app slack
+
+# Scroll transposes a whole workspace and has no accordion layout. Overview is
+# the closest non-destructive substitute for AeroSpace's accordion binding.
+bindsym $mod+slash layout_transpose
+bindsym $mod+comma scale_workspace overview
+bindsym $mod+f floating toggle
+bindsym $mod+space fullscreen toggle
+
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+
+bindsym $mod+Shift+$left move left nomode
+bindsym $mod+Shift+$down move down nomode
+bindsym $mod+Shift+$up move up nomode
+bindsym $mod+Shift+$right move right nomode
+
+# AeroSpace's smart resize chooses an axis from its tree. Scroll's horizontal
+# column model maps that operation to column width.
+bindsym $mod+t resize shrink width 150 px
+bindsym $mod+y resize grow width 150 px
+bindsym $mod+Shift+t resize shrink width 100 px
+bindsym $mod+Shift+y resize grow width 100 px
+bindsym $mod+Ctrl+t resize shrink width 50 px
+bindsym $mod+Ctrl+y resize grow width 50 px
+bindsym $mod+Shift+minus resize shrink width 50 px
+bindsym $mod+Shift+equal resize grow width 50 px
+
+# Scroll has no one-step join-with command. nomode moves only the active window;
+# repeated movement inserts it into the adjacent column or row.
+bindsym $mod+$cmd+$left move left nomode
+bindsym $mod+$cmd+$down move down nomode
+bindsym $mod+$cmd+$up move up nomode
+bindsym $mod+$cmd+$right move right nomode
+
+bindsym $mod+x workspace Scratch
+bindsym $mod+m workspace Messages
+bindsym $mod+v workspace Meetings
+bindsym $mod+c workspace Code
+bindsym $mod+n workspace Notes
+bindsym $mod+d workspace Design
+bindsym $mod+w workspace Web
+bindsym $mod+e workspace Entertainment
+bindsym $mod+p workspace Private
+
+bindsym $mod+Shift+x move container to workspace Scratch; workspace Scratch
+bindsym $mod+Shift+m move container to workspace Messages; workspace Messages
+bindsym $mod+Shift+v move container to workspace Meetings; workspace Meetings
+bindsym $mod+Shift+c move container to workspace Code; workspace Code
+bindsym $mod+Shift+n move container to workspace Notes; workspace Notes
+bindsym $mod+Shift+d move container to workspace Design; workspace Design
+bindsym $mod+Shift+w move container to workspace Web; workspace Web
+bindsym $mod+Shift+e move container to workspace Entertainment; workspace Entertainment
+bindsym $mod+Shift+p move container to workspace Private; workspace Private
+
+# Scroll accepts directional output commands but not AeroSpace's wrapping
+# "next monitor" selector. This helper provides deterministic next-output wrap.
+bindsym $mod+Ctrl+Tab exec $scroll_scripts/cycle-output focus
+bindsym $mod+Tab workspace back_and_forth
+bindsym $mod+Shift+Tab exec $scroll_scripts/cycle-output window
+bindsym $mod+Ctrl+x exec $scroll_scripts/cycle-output workspace
+
+bindsym $mod+Ctrl+$left move container to output left; focus output left
+bindsym $mod+Ctrl+$down move container to output down; focus output down
+bindsym $mod+Ctrl+$up move container to output up; focus output up
+bindsym $mod+Ctrl+$right move container to output right; focus output right
+
+bindsym $mod+Ctrl+Shift+r reload
+bindsym $mod+Shift+semicolon mode "service"
+
+mode "service" {
+    # Scroll cannot flatten arbitrary AeroSpace trees. This resets a workspace
+    # split and restores horizontal insertion mode.
+    bindsym r workspace split reset; set_mode h; mode "default"
+    bindsym BackSpace kill unfocused; mode "default"
+    bindsym Escape reload; mode "default"
+}
+
+# AeroSpace's startup-only Web fallback has no direct Scroll criterion. A global
+# assign would also move later unclassified windows, so it is intentionally not
+# reproduced. Likewise, macOS-only Photo Booth, Finder, Simulator, Safari,
+# Xcode, and Messages rules have no Linux target.
+# Its monitor assignments name Mac displays, and its workspace-change hook is a
+# Mac-only absolute path; both require machine-specific Linux values before use.
+for_window [app_id="(?i)(chatgpt|pritunl|vial|docker|1password)"] floating enable
+for_window [class="(?i)(chatgpt|pritunl|vial|docker|1password)"] floating enable
+for_window [title="(?i)(Settings|Install)"] floating enable
+
+for_window [title="(?i)(Music|SoundCloud|Spotify)"] move container to workspace Entertainment
+for_window [app_id="(?i)selene"] floating enable, move container to workspace Entertainment
+for_window [class="(?i)selene"] floating enable, move container to workspace Entertainment
+
+assign [app_id="(?i)(google-chrome|chromium|firefox|brave)"] Web
+assign [class="(?i)(google-chrome|chromium|firefox|brave)"] Web
+assign [title="(?i)Obsidian"] Notes
+assign [title="(?i)Figma"] Design
+
+assign [app_id="(?i)(intellij|jetbrains|zed|code|vscodium)"] Code
+assign [class="(?i)(intellij|jetbrains|zed|code|vscodium)"] Code
+assign [app_id="(?i)(wezterm|ghostty)"] Code
+assign [class="(?i)(wezterm|ghostty)"] Code
+
+assign [app_id="(?i)(whatsapp|slack|discord)"] Messages
+assign [class="(?i)(whatsapp|slack|discord)"] Messages
+assign [title="(?i)(Google Meet|Google Calendar)"] Meetings
+
+# Noctalia is optional until it is installed. Guarding its official Scroll/Sway
+# startup command keeps Scroll startup clean during staged installation.
+exec sh -lc 'command -v noctalia >/dev/null 2>&1 && exec noctalia'
+exec $scroll_scripts/touch-gestures
+
+include /etc/scroll/config.d/*

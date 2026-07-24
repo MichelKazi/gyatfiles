@@ -1,0 +1,105 @@
+# SteamOS 3.8 fork of the AUR `noctalia` package (upstream maintainer: Noctalia
+# Team <team@noctalia.dev>, https://aur.archlinux.org/packages/noctalia).
+# Adds a scrollmsg fallback for SwayRuntime::m_msgCommand (upstream only resolves
+# swaymsg/i3-msg for IPC commands; scroll-only hosts got an empty msgCommand).
+#
+# All depends/makedepends below resolved from SteamOS 3.8's own repos
+# (core-3.8/extra-3.8/holo-3.8/jupiter-3.8) at audit time -- no AUR chain-build
+# and no `pacman -Syu` required. Install prerequisites once with:
+#   sudo pacman -S --needed base-devel meson ninja
+# Build from a /home path (rootfs has <1GB free on stock partitioning); the
+# default unset BUILDDIR already resolves to $PWD, so just run makepkg from
+# a directory under /home.
+
+_pkgname=noctalia
+_tagver=5.0.0-beta.4
+pkgname=noctalia-steamdeck
+pkgver=5.0.0_beta.4
+pkgrel=1
+pkgdesc='Noctalia desktop shell (v5), patched for scroll IPC on SteamOS 3.8'
+arch=('x86_64')
+url='https://github.com/noctalia-dev/noctalia'
+license=('MIT')
+options=('!debug')
+depends=(
+  'cairo'
+  'curl'
+  'fontconfig'
+  'freetype2'
+  'gcc-libs'
+  'git'
+  'glib2'
+  'glibc'
+  'jemalloc'
+  'libglvnd'
+  'libpipewire'
+  'libqalculate'
+  'librsvg'
+  'libsecret'
+  'libsodium'
+  'libwebp'
+  'libwireplumber'
+  'libxkbcommon'
+  'libxml2'
+  'md4c'
+  'pam'
+  'polkit'
+  'pango'
+  'sdbus-cpp'
+  'tomlplusplus'
+  'wayland'
+)
+makedepends=(
+  'meson'
+  'ninja'
+  'nlohmann-json'
+  'pkgconf'
+  'stb'
+  'wayland-protocols'
+)
+provides=('noctalia')
+conflicts=('noctalia' 'noctalia-git' 'noctalia-bin')
+source=(
+  "${_pkgname}-${_tagver}.tar.gz::${url}/archive/refs/tags/v${_tagver}.tar.gz"
+  '0001-sway-scrollmsg-msgcommand-fallback.patch'
+  '0002-register-sway-runtime-msgcommand-test.patch'
+  'sway_runtime_msgcommand_test.cpp'
+)
+b2sums=('6faf482a42401ee94c394ddcd48701651435ff32a128325c256b4ce2ebb2c82caa919b7a827613e67e30a206d97c88beb14238a39e38d41405c9c98a3fc3e2d8'
+        '4cc69af0b8d854e7c733a88fd8e65e1602179e1938b89e9a932b76886f0d51ebe7a4feea70bb2e5ec90bae02399ffc625d439e8b54939fd8b42bd1e9b53261d7'
+        '65da17ef167a7feaad506adfed4c20f5b3a808ecdbd77d9fba2084f50da8e46a45c83cccefbd8089150db052d522615468a9b20f1472b4ca6c4ce3dfe7bb9055'
+        '21fca0218a08c40647811913e71a4e492f3ea83cd1ef2ad06e2f27eeee155fa5c6abd38e1b6f4e3888a64293d07f0cdabef1b7b98f14c06a42e123d5a9ce8103')
+
+prepare() {
+  cd "${_pkgname}-${_tagver}"
+  patch -Np1 -i "$srcdir/0001-sway-scrollmsg-msgcommand-fallback.patch"
+  patch -Np1 -i "$srcdir/0002-register-sway-runtime-msgcommand-test.patch"
+  install -Dm644 "$srcdir/sway_runtime_msgcommand_test.cpp" tests/sway_runtime_msgcommand_test.cpp
+}
+
+build() {
+  CXXFLAGS+=" -Wno-unused-result"
+  # native_optimizations=false: upstream default enables -march=native, which
+  # makes the binary non-portable across CPUs and non-reproducible off-device.
+  arch-meson "${_pkgname}-${_tagver}" build-release \
+    -Db_ndebug=true \
+    -Dnative_optimizations=false \
+    -Dtests=disabled
+  meson compile -C build-release
+}
+
+check() {
+  # Scoped to the one test the patch adds, not the full upstream suite (some of
+  # those touch network/calendar credentials and aren't this recipe's concern).
+  meson setup --reconfigure "$srcdir/build-release" "$srcdir/${_pkgname}-${_tagver}" -Dtests=enabled
+  meson compile -C "$srcdir/build-release" sway_runtime_msgcommand_test
+  meson test -C "$srcdir/build-release" sway_runtime_msgcommand --print-errorlogs
+  meson setup --reconfigure "$srcdir/build-release" "$srcdir/${_pkgname}-${_tagver}" -Dtests=disabled
+}
+
+package() {
+  meson install -C build-release --destdir "${pkgdir}"
+
+  install -Dm644 "${_pkgname}-${_tagver}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 "${_pkgname}-${_tagver}/README.md" "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

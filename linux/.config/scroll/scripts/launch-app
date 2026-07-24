@@ -1,0 +1,45 @@
+#!/bin/sh
+set -eu
+
+role=${1:-}
+flatpak_id=
+
+case "$role" in
+    terminal)
+        for command in ghostty konsole foot; do
+            if command -v "$command" >/dev/null 2>&1; then
+                exec "$command"
+            fi
+        done
+        ;;
+    obsidian)
+        if command -v obsidian >/dev/null 2>&1; then
+            exec obsidian
+        fi
+        flatpak_id=md.obsidian.Obsidian
+        ;;
+    browser)
+        for command in firefox-developer-edition firefox; do
+            if command -v "$command" >/dev/null 2>&1; then
+                exec "$command"
+            fi
+        done
+        flatpak_id=org.mozilla.firefox
+        ;;
+    slack)
+        if command -v slack >/dev/null 2>&1; then
+            exec slack
+        fi
+        flatpak_id=com.slack.Slack
+        ;;
+    *)
+        exit 2
+        ;;
+esac
+
+if [ -n "$flatpak_id" ] && command -v flatpak >/dev/null 2>&1 \
+        && flatpak info "$flatpak_id" >/dev/null 2>&1; then
+    exec flatpak run "$flatpak_id"
+fi
+
+exit 0

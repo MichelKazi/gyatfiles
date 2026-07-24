@@ -1,0 +1,13 @@
+--- a/src/compositors/sway/sway_runtime.cpp
++++ b/src/compositors/sway/sway_runtime.cpp
+@@ -63,6 +63,10 @@
+       m_msgCommand = "swaymsg";
+     } else if (process::commandExists("i3-msg")) {
+       m_msgCommand = "i3-msg";
++    } else if (process::commandExists("scrollmsg")) {
++      // scroll speaks the sway IPC protocol but ships only `scrollmsg`; without
++      // this branch m_msgCommand stays empty and IPC-driven features no-op.
++      m_msgCommand = "scrollmsg";
+     }
+
+     if (process::commandExists("scrollmsg")) {

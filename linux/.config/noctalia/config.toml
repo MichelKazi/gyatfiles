@@ -1,0 +1,44 @@
+[shell]
+telemetry_enabled = false
+setup_wizard_enabled = true
+polkit_agent = false
+
+[shell.panel]
+transparency_mode = "soft"
+borders = true
+shadow = true
+
+[osd.kinds]
+power_profile = false
+
+[brightness]
+enable_ddcutil = false
+
+[shell.session]
+grid = false
+show_shortcuts = true
+
+[[shell.session.actions]]
+action = "lock"
+shortcut = "1"
+
+[[shell.session.actions]]
+action = "logout"
+command = "$HOME/.local/bin/scroll-to-gaming"
+shortcut = "2"
+
+[[shell.session.actions]]
+action = "lock_and_suspend"
+shortcut = "3"
+
+[[shell.session.actions]]
+action = "reboot"
+shortcut = "4"
+variant = "destructive"
+countdown_seconds = 5
+
+[[shell.session.actions]]
+action = "shutdown"
+shortcut = "5"
+variant = "destructive"
+countdown_seconds = 5
