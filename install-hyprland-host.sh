@@ -47,7 +47,7 @@ PKGS=(
   hyprland xdg-desktop-portal-hyprland hyprpaper
   waybar swaync wob wofi
   grim slurp wl-clipboard brightnessctl libnotify qt6ct
-  jq
+  jq stow
   # wvkbd build deps:
   base-devel wayland wayland-protocols libxkbcommon pango cairo
 )
