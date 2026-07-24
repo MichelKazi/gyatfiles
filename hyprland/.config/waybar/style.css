@@ -1,0 +1,38 @@
+/* Waybar — themes/vector palette (bg #0a0e17, cyan #22d3ee, violet #b18aff). */
+* {
+  font-family: "Sans", "Symbols Nerd Font";
+  font-size: 14px;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(10, 14, 23, 0.92);
+  color: #5a7290;
+}
+
+#workspaces button {
+  padding: 0 8px;
+  color: #5a7290;
+  background: transparent;
+}
+#workspaces button.active {
+  color: #0a0e17;
+  background: #22d3ee;
+  border-radius: 6px;
+}
+#workspaces button.urgent {
+  color: #0a0e17;
+  background: #ff5d73;
+  border-radius: 6px;
+}
+
+#clock { color: #22d3ee; font-weight: bold; }
+#submap { color: #f0b429; }
+
+#pulseaudio, #backlight, #network, #battery, #tray {
+  padding: 0 8px;
+  color: #5a7290;
+}
+#battery.warning { color: #f0b429; }
+#battery.critical { color: #ff5d73; }
+#battery.charging { color: #34d399; }

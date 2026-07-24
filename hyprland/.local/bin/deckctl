@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# deckctl — Steam Deck Hyprland action layer.
+# Adapted from hyprdose's angelctl: hardware buttons, screenshots, on-screen
+# keyboard, workspace nav. Keeps hyprdose's wob-OSD pattern (write level to a
+# fifo that `wob` tails). Called from hyprland.conf binds.
+set -euo pipefail
+
+source "$HOME/.config/hypr/deckrc" || { echo "deckctl: missing ~/.config/hypr/deckrc" >&2; exit 1; }
+
+# Emit a 0-100 level to the wob OSD socket (best-effort; no-op if wob isn't up).
+osd() { printf '%s\n' "$1" > "$DECK_WOBSOCK_PATH" 2>/dev/null || true; }
+
+sink_volume_pct() {
+    # wpctl prints e.g. "Volume: 0.45" or "... [MUTED]". Return 0 when muted.
+    local out; out="$(wpctl get-volume @DEFAULT_AUDIO_SINK@)"
+    [[ "$out" == *MUTED* ]] && { echo 0; return; }
+    awk '{printf "%d", $2 * 100}' <<<"$out"
+}
+
+audio() {
+    case "${1:-}" in
+        up)         wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ "${DECK_AUDIO_STEP}%+" ;;
+        down)       wpctl set-volume @DEFAULT_AUDIO_SINK@ "${DECK_AUDIO_STEP}%-" ;;
+        togglemute) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+        *) echo "audio: up|down|togglemute" >&2; exit 1 ;;
+    esac
+    osd "$(sink_volume_pct)"
+}
+
+brightness() {
+    case "${1:-}" in
+        up)   brightnessctl set "${DECK_BRIGHTNESS_STEP}%+" >/dev/null ;;
+        down) brightnessctl set "${DECK_BRIGHTNESS_STEP}%-" >/dev/null ;;
+        *) echo "brightness: up|down" >&2; exit 1 ;;
+    esac
+    # brightnessctl -m: "device,class,current,pct%,max" — field 4 has the percent.
+    osd "$(brightnessctl -m | cut -d, -f4 | tr -d '%')"
+}
+
+screenshot() {
+    mkdir -p "$DECK_SCREENSHOT_DIR"
+    local out
+    out="$DECK_SCREENSHOT_DIR/$(date +'%Y%m%d-%H%M%S').png"
+    case "${1:-}" in
+        full)    grim "$out" ;;
+        partial) grim -g "$(slurp)" "$out" ;;
+        *) echo "screenshot: full|partial" >&2; exit 1 ;;
+    esac
+    wl-copy < "$out"
+    notify-send "Screenshot" "$out"
+}
+
+# Toggle wvkbd on-screen keyboard. Colors from themes/vector palette.
+keyboard() {
+    if pidof wvkbd-mobintl >/dev/null; then
+        pkill -x wvkbd-mobintl
+    else
+        wvkbd-mobintl -L "$DECK_KEYBOARD_HEIGHT" \
+            -l simple,special --landscape-layers simple,special \
+            --bg 0a0e17 --fg 0d1a26 --fg-sp 1a2332 \
+            --press 22d3ee --press-sp b18aff \
+            --text 22d3ee --text-sp b18aff \
+            --fn "Sans 18" &
+    fi
+}
+
+workspace() {
+    local cur; cur="$(hyprctl activeworkspace -j | jq .id)"
+    case "${1:-}" in
+        up)   [[ "$cur" -lt "$DECK_MAX_WORKSPACE" ]] && hyprctl dispatch workspace "$((cur + 1))" ;;
+        down) [[ "$cur" -gt 1 ]] && hyprctl dispatch workspace "$((cur - 1))" ;;
+        *) echo "workspace: up|down" >&2; exit 1 ;;
+    esac
+}
+
+case "${1:-}" in
+    audio|brightness|screenshot|keyboard|workspace) "$@" ;;
+    *) echo "deckctl: audio|brightness|screenshot|keyboard|workspace" >&2; exit 1 ;;
+esac
