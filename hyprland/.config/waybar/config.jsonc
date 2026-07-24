@@ -24,7 +24,7 @@
     "format": "{icon} {volume}%",
     "format-muted": "󰝟 muted",
     "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
-    "on-click": "deckctl audio togglemute"
+    "on-click": "~/.local/bin/deckctl audio togglemute"
   },
   "backlight": {
     "format": "󰃟 {percent}%"
