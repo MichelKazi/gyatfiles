@@ -5,7 +5,11 @@
 
 # Auto-start tmux if not already in a tmux session
 if [[ -z "$TMUX" && -z "${DOTFILES_NO_TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
-    tmux new -A -s BASE
+    if [[ -n "${CONTAINER_ID:-}" ]]; then
+        tmux -L "$CONTAINER_ID" new -A -s BASE
+    else
+        tmux new -A -s BASE
+    fi
 fi
 
 # Completion cache optimization (GNU stat version)
