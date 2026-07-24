@@ -86,8 +86,13 @@ done
 
 echo "=== Stowing shared config ==="
 if [[ $DRY_RUN -eq 1 ]]; then
-  stow -n -v -d "$DOTFILES_DIR" -t "$HOME" base
+  if command -v stow >/dev/null 2>&1; then
+    stow -n -v -d "$DOTFILES_DIR" -t "$HOME" base
+  else
+    echo "[dry-run] would stow base into $HOME after installing stow"
+  fi
 else
+  require stow
   stow -d "$DOTFILES_DIR" -t "$HOME" base
 fi
 
