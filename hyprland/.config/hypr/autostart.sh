@@ -15,8 +15,14 @@ done
 # working under scroll; compositor-agnostic so it runs under Hyprland too.
 have noctalia && noctalia &
 
-# Steam is deliberately NOT autostarted. On the Deck the pointer is Steam Input's
-# lizard mode; with no active Desktop Layout, a running Steam grabs the controller
-# and FREEZES the Hyprland cursor (the Xwayland/Steam-Input grab bug). Launch Steam
-# by hand once a Steam Input "Desktop Layout" is configured to drive the pointer.
+# Steam + extest. On the Deck the desktop pointer IS Steam Input: it grabs the
+# controller and emits mouse/keyboard, but via X11 XTEST which is dead under
+# Wayland — so extest (32-bit libextest.so, built by install-hyprland-host.sh)
+# bridges XTEST to a uinput virtual device Hyprland reads. Without both, the
+# cursor freezes when Steam runs. Idempotent: only launch if not already up.
+EXTEST="$HOME/.local/lib/libextest.so"
+if [[ -f "$EXTEST" ]] && ! pgrep -x steam >/dev/null; then
+    LD_PRELOAD="$EXTEST" /usr/bin/steam -silent &
+fi
+
 # GAP: wallpaper (hyprpaper) not shipped — Noctalia can set one, else solid black.
