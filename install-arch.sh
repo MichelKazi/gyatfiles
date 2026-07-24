@@ -106,7 +106,12 @@ install_yay
 for package in "${AUR_PACKAGES[@]}"; do
   if [[ $DRY_RUN -eq 1 ]]; then
     if command -v yay >/dev/null 2>&1; then
-      yay -Sp "$package"
+      if yay -Q "$package" >/dev/null 2>&1; then
+        echo "Already installed: $package"
+      else
+        yay -Si "$package" >/dev/null
+        echo "[dry-run] would install AUR package: $package"
+      fi
     else
       echo "[dry-run] AUR package to resolve after yay bootstrap: $package"
     fi
