@@ -36,7 +36,7 @@ backup_stow_conflicts() {
     relative="${source#"$base_dir"/}"
     target="$HOME/$relative"
     [[ -e "$target" || -L "$target" ]] || continue
-    if [[ -L "$target" ]] && [[ "$(readlink -f "$target")" == "$(readlink -f "$source")" ]]; then
+    if [[ "$target" -ef "$source" ]]; then
       continue
     fi
 
