@@ -24,6 +24,39 @@ require() {
   command -v "$1" >/dev/null 2>&1 || { echo "Error: required command missing: $1"; exit 1; }
 }
 
+BASE_CONFLICTS=0
+backup_stow_conflicts() {
+  local base_dir="$DOTFILES_DIR/base"
+  local backup_dir=""
+  local source relative target
+
+  shopt -s dotglob globstar nullglob
+  for source in "$base_dir"/**; do
+    [[ -f "$source" || -L "$source" ]] || continue
+    relative="${source#"$base_dir"/}"
+    target="$HOME/$relative"
+    [[ -e "$target" || -L "$target" ]] || continue
+    if [[ -L "$target" ]] && [[ "$(readlink -f "$target")" == "$(readlink -f "$source")" ]]; then
+      continue
+    fi
+
+    BASE_CONFLICTS=$((BASE_CONFLICTS + 1))
+    if [[ $DRY_RUN -eq 1 ]]; then
+      echo "[dry-run] would back up conflicting target: $target"
+      continue
+    fi
+
+    if [[ -z "$backup_dir" ]]; then
+      backup_dir="$HOME/.local/state/gyatfiles-backups/$(date +%Y%m%d-%H%M%S)"
+    fi
+    mkdir -p "$backup_dir/$(dirname "$relative")"
+    mv "$target" "$backup_dir/$relative"
+  done
+  shopt -u dotglob globstar nullglob
+
+  [[ -z "$backup_dir" ]] || echo "Backed up conflicting targets to: $backup_dir"
+}
+
 [[ -d "$DOTFILES_DIR" ]] || { echo "Error: dotfiles directory not found: $DOTFILES_DIR"; exit 1; }
 require pacman
 require sudo
@@ -85,8 +118,11 @@ for package in "${AUR_PACKAGES[@]}"; do
 done
 
 echo "=== Stowing shared config ==="
+backup_stow_conflicts
 if [[ $DRY_RUN -eq 1 ]]; then
-  if command -v stow >/dev/null 2>&1; then
+  if [[ $BASE_CONFLICTS -gt 0 ]]; then
+    echo "[dry-run] would stow base after backing up conflicts"
+  elif command -v stow >/dev/null 2>&1; then
     stow -n -v -d "$DOTFILES_DIR" -t "$HOME" base
   else
     echo "[dry-run] would stow base into $HOME after installing stow"
