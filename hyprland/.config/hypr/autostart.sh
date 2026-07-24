@@ -5,25 +5,18 @@ source "$HOME/.config/hypr/deckrc" || true
 
 have() { command -v "$1" >/dev/null 2>&1; }
 
-# wob OSD sink: deckctl writes 0-100 levels here, wob renders the bar.
-if have wob; then
-    rm -f "$DECK_WOBSOCK_PATH"; touch "$DECK_WOBSOCK_PATH"
-    tail -f "$DECK_WOBSOCK_PATH" | wob &
-fi
-
-have waybar && waybar &
-have swaync && swaync &
-
 # polkit auth agent (installed with plasma on SteamOS).
 for p in /usr/lib/polkit-kde-authentication-agent-1 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1; do
     [[ -x "$p" ]] && { "$p" &  break; }
 done
 
-# Steam in desktop mode. -silent = start to tray. Runs as an Xwayland client;
-# see the xwayland nofocus windowrule in hyprland.conf for the grab-bug guard.
-# GAP: hyprdose LD_PRELOADs extest so Steam's global hotkeys work under Wayland.
-# Skipped (needs building extest); add if you want Steam hotkeys captured globally.
-have steam && steam -silent &
+# Noctalia: full Quickshell desktop shell — bar, notifications, launcher, OSD,
+# touch widgets. Replaces waybar/swaync/wob (all one integrated shell). Already
+# working under scroll; compositor-agnostic so it runs under Hyprland too.
+have noctalia && noctalia &
 
-# GAP: no wallpaper (hyprpaper) shipped — desktop is solid black. Drop an image
-# and add a hyprpaper.conf + `hyprpaper &` here if wanted.
+# Steam is deliberately NOT autostarted. On the Deck the pointer is Steam Input's
+# lizard mode; with no active Desktop Layout, a running Steam grabs the controller
+# and FREEZES the Hyprland cursor (the Xwayland/Steam-Input grab bug). Launch Steam
+# by hand once a Steam Input "Desktop Layout" is configured to drive the pointer.
+# GAP: wallpaper (hyprpaper) not shipped — Noctalia can set one, else solid black.
