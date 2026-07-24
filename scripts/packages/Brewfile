@@ -2,8 +2,6 @@ tap "barutsrb/tap", "https://github.com/BarutSRB/homebrew-tap"
 tap "coursier/formulas"
 tap "dwijnand/extras"
 tap "felixkratz/formulae", "https://github.com/FelixKratz/homebrew-formulae"
-tap "homebrew/bundle"
-tap "homebrew/services"
 tap "michelkazi/tap"
 tap "molovo/revolver"
 tap "nikitabobko/tap"
@@ -78,8 +76,6 @@ brew "gh"
 brew "tesseract"
 # GIF image/animation creator/editor
 brew "gifsicle"
-# Distributed revision control system
-brew "git"
 # Syntax-highlighting pager for git and diff output
 brew "git-delta"
 # Git extension for versioning large files
@@ -134,10 +130,8 @@ brew "miniupnpc"
 brew "protobuf"
 # Remote terminal application
 brew "mosh"
-# Cryptography and SSL/TLS Toolkit
-brew "openssl@1.1"
 # Open source relational database management system
-brew "mysql@5.7", link: true
+brew "mysql@8.4", link: true
 # Incremental parsing library
 brew "tree-sitter"
 # Ambitious Vim-fork focused on extensibility and agility
@@ -173,7 +167,7 @@ brew "progressline"
 # Pretty, minimal and fast ZSH prompt
 brew "pure"
 # Python version management
-brew "pyenv", args: ["HEAD"]
+brew "pyenv"
 # Static type checker for Python
 brew "pyright"
 # Tools for and transforming and inspecting PDF files
@@ -246,9 +240,6 @@ cask "anaconda"
 cask "drawio"
 # Terminal emulator that uses platform-native UI and GPU acceleration
 cask "ghostty"
-cask "graphiql"
-# Native remote workstation host — stream your desktop to any client, low latency
-cask "michelkazi/tap/helios", trusted: true
 # Open-source keystroke visualiser
 cask "keycastr"
 # Customise mouse behavior
@@ -257,7 +248,7 @@ cask "linearmouse"
 cask "monitorcontrol"
 # Reverse proxy, secure introspectable tunnels to localhost
 cask "ngrok"
-cask "omniwm"
+cask "barutsrb/tap/omniwm", trusted: true if MacOS.version >= :tahoe
 # Toolbox companion for QMK Firmware
 cask "qmk-toolbox"
 # Cross-device clipboard syncing tool

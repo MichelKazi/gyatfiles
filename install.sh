@@ -14,6 +14,7 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/gyatfiles}"
 BREWFILE="$DOTFILES_DIR/scripts/packages/Brewfile"
 DRY_RUN=0
 SETUP_FAILED=0
+BUNDLE_FAILED=0
 
 for arg in "$@"; do
     case "$arg" in
@@ -89,8 +90,8 @@ else
     # if the Rust toolchain isn't up yet; the second pass below fixes that.
     echo "Running brew bundle (pass 1)..."
     if ! brew bundle install --file="$BREWFILE"; then
-        echo "brew bundle pass 1 failed; continuing to Rust and Stow"
-        SETUP_FAILED=1
+        echo "brew bundle pass 1 failed; continuing to Rust before retry"
+        BUNDLE_FAILED=1
     fi
 fi
 
@@ -110,18 +111,22 @@ elif command -v cargo &> /dev/null; then
 elif command -v rustup-init &> /dev/null; then
     echo "Initializing Rust toolchain..."
     rustup-init -y
-    source "$HOME/.cargo/env"
-    echo "Running brew bundle (pass 2, for cargo packages)..."
-    if brew bundle install --file="$BREWFILE"; then
-        SETUP_FAILED=0
-    else
-        echo "brew bundle pass 2 failed"
-        SETUP_FAILED=1
-    fi
+    export PATH="$HOME/.cargo/bin:$PATH"
 else
     echo "Error: cargo and rustup-init are unavailable"
     SETUP_FAILED=1
 fi
+
+if [[ $DRY_RUN -eq 0 && $BUNDLE_FAILED -eq 1 ]] && command -v cargo &> /dev/null; then
+    echo "Running brew bundle (pass 2)..."
+    if brew bundle install --file="$BREWFILE"; then
+        BUNDLE_FAILED=0
+    else
+        echo "brew bundle pass 2 failed"
+    fi
+fi
+
+[[ $BUNDLE_FAILED -eq 1 ]] && SETUP_FAILED=1
 
 # --- Stow -------------------------------------------------------------------
 echo ""
@@ -140,13 +145,13 @@ for dir in "${STOW_DIRS[@]}"; do
     fi
     if [[ $DRY_RUN -eq 1 ]]; then
         echo "[dry-run] stow $dir:"
-        stow -n -v -d "$DOTFILES_DIR" -t "$HOME" "$dir" 2>&1 | sed 's/^/    /'
-    elif stow -n -d "$DOTFILES_DIR" -t "$HOME" "$dir" 2>&1 | grep -q "existing target"; then
+        LC_ALL=C LANG=C stow -n -v -d "$DOTFILES_DIR" -t "$HOME" "$dir" 2>&1 | sed 's/^/    /'
+    elif LC_ALL=C LANG=C stow -n -d "$DOTFILES_DIR" -t "$HOME" "$dir" 2>&1 | grep -q "existing target"; then
         echo "Conflict: $dir (run 'stow --adopt $dir' to adopt existing files)"
         SETUP_FAILED=1
     else
         echo "Stowing: $dir"
-        if ! stow -d "$DOTFILES_DIR" -t "$HOME" "$dir"; then
+        if ! LC_ALL=C LANG=C stow -d "$DOTFILES_DIR" -t "$HOME" "$dir"; then
             echo "Failed to stow $dir"
             SETUP_FAILED=1
         fi
@@ -154,7 +159,12 @@ for dir in "${STOW_DIRS[@]}"; do
 done
 
 echo ""
-echo "=== Setup Complete ==="
+if [[ $SETUP_FAILED -eq 0 ]]; then
+    echo "=== Setup Complete ==="
+else
+    echo "=== Setup Incomplete ==="
+    echo "One or more setup steps failed; review the errors above."
+fi
 [[ $DRY_RUN -eq 1 ]] && echo "(dry run — nothing was changed)"
 echo "Restart your terminal to apply all changes."
 exit "$SETUP_FAILED"
