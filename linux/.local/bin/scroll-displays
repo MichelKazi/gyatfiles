@@ -1,0 +1,19 @@
+#!/bin/sh
+# Launch nwg-displays against the scroll (sway-fork) compositor.
+#
+# nwg-displays refuses to run unless it detects sway/Hyprland, and needs
+# SWAYSOCK. scroll speaks sway IPC, so we spoof the desktop id and point it at
+# scroll's live IPC socket. -o writes the outputs config that scroll includes
+# (via `include ~/.config/scroll/config.d/*` -> outputs there).
+export XDG_CURRENT_DESKTOP=sway
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"
+export GDK_BACKEND=wayland
+export SWAYSOCK="$(ls -t /run/user/"$(id -u)"/scroll-ipc.*.sock 2>/dev/null | head -1)"
+[ -n "$SWAYSOCK" ] || { echo "scroll IPC socket not found (is scroll running?)" >&2; exit 1; }
+
+OUT="$HOME/.config/scroll/config.d/outputs.conf"
+mkdir -p "$(dirname "$OUT")"
+
+# -o : path nwg-displays writes the generated output config to
+exec nwg-displays -o "$OUT" "$@"
