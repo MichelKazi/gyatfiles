@@ -1,0 +1,11 @@
+# deckrc — tunables for deckctl (adapted from hyprdose angelrc).
+# Sourced by deckctl and autostart.sh.
+
+DECK_AUDIO_STEP=5
+DECK_BRIGHTNESS_STEP=5
+DECK_SCREENSHOT_DIR="$HOME/Pictures"
+DECK_WOBSOCK_PATH="$HOME/.wobsock"
+DECK_MAX_WORKSPACE=10
+
+# wvkbd on-screen keyboard geometry (px height) + colors (themes/vector palette).
+DECK_KEYBOARD_HEIGHT=340
