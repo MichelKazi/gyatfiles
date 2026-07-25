@@ -42,3 +42,27 @@ action = "shutdown"
 shortcut = "5"
 variant = "destructive"
 countdown_seconds = 5
+
+[idle]
+behavior_order = [ "dim", "screen-off", "suspend" ]
+
+[idle.behavior.dim]
+action = "custom"
+enabled = true
+timeout = 300.0
+command = "$HOME/.local/bin/noctalia-dim dim"
+resume_command = "$HOME/.local/bin/noctalia-dim undim"
+
+[idle.behavior.screen-off]
+action = "screen_off"
+enabled = true
+timeout = 600.0
+
+# "custom" rather than the built-in suspend action because this must only fire
+# on battery, and idle behaviors have no AC/battery condition.
+[idle.behavior.suspend]
+action = "custom"
+enabled = true
+timeout = 900.0
+command = "$HOME/.local/bin/noctalia-idle-suspend"
+resume_command = ""
