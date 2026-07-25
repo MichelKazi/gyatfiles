@@ -1,0 +1,11 @@
+#!/bin/sh
+# noctalia [idle.behavior.suspend]: suspend on idle, but only on battery.
+# Noctalia's idle behaviors have no AC/battery condition, so gate it here.
+# A failed read exits non-zero and suspends nothing, which is the safe way
+# to be wrong.
+set -eu
+
+ac=/sys/class/power_supply/ACAD/online
+
+[ "$(cat "$ac")" = "0" ] || exit 0
+exec systemctl suspend

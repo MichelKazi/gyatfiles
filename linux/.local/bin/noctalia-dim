@@ -1,0 +1,27 @@
+#!/bin/sh
+# Idle dim helper for noctalia's [idle.behavior.dim]: save panel brightness,
+# dim, restore the saved value on resume. Internal panel only -- ddcutil is
+# disabled, so noctalia cannot drive external monitor brightness anyway.
+set -eu
+
+dev=amdgpu_bl0
+out=eDP-1
+dim_pct=5
+state="${XDG_RUNTIME_DIR:-/tmp}/noctalia-dim.pre"
+
+case "${1:-}" in
+    dim)
+        # ponytail: skip the save if one is already pending, so a repeated
+        # dim never records the dimmed value as the level to restore.
+        [ -f "$state" ] || brightnessctl -m -d "$dev" | cut -d, -f4 | tr -d '%' >"$state"
+        noctalia msg brightness-set "$out" "$dim_pct"
+        ;;
+    undim)
+        noctalia msg brightness-set "$out" "$(cat "$state" 2>/dev/null || echo 30)"
+        rm -f "$state"
+        ;;
+    *)
+        echo "usage: ${0##*/} dim|undim" >&2
+        exit 2
+        ;;
+esac
