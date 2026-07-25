@@ -8,8 +8,9 @@ across platforms.
 
 1. **Dry run before any mutating install.** Never run the installers blind.
    - macOS: `./install.sh --dry-run` (wraps `brew bundle check`, previews stow with `stow -n`).
-   - Arch: `pacman -S --print ...` / `yay -S --print ...` to preview, or run the specific
-     package check below before touching the system.
+   - Linux: `./install.linux.sh --dry-run` (previews every phase; add `--only PHASE` to
+     narrow). Run it from the HOST — `$HOME` is shared, so landing inside `arch-base` by
+     accident is easy; every phase script guards against it.
    Only run the real install after the dry run looks right.
 
 2. **Never hand-edit package lists.** `scripts/packages/*` (Brewfile, cargo.txt, npm.txt,
@@ -18,53 +19,79 @@ across platforms.
    A launchd agent (`scripts/launchd/com.kazi.syncinstalledpackages.plist`) runs it weekly
    on macOS.
 
-3. **macOS is the source of truth for package intent.** The Brewfile is the canonical list.
-   Linux/Arch mirrors a curated subset (see `install-arch.sh`), not the whole Brewfile —
-   most of it is macOS-only (casks, Xcode tooling, QMK, etc.).
+3. **macOS is the source of truth for package intent.** `scripts/packages/Brewfile` is the
+   canonical list. Linux mirrors a curated subset in `scripts/linux/Brewfile`, not the whole
+   thing — most of it is macOS-only (casks, Xcode tooling, QMK, etc.). `scripts/linux/Brewfile`
+   is hand-curated and therefore lives OUTSIDE `scripts/packages/`, which rule 2 reserves for
+   generated lists. Its header names every dropped package and why.
 
 ## Files
 
 - `install.sh` — macOS installer. Homebrew → `brew bundle` (formulae, casks, taps, cargo,
   npm, uv) → Rust init → `stow`. Idempotent. `--dry-run` supported.
-- `install-arch.sh` — Arch / Steam Deck / **arch distrobox** installer. pacman + yay(AUR),
-  curated subset, minimal stow set (nvim, tmux, zsh, starship, lsd).
+- `install.linux.sh` — Linux installer. Orchestrates four phases from `scripts/linux/`,
+  each runnable alone via `--only PHASE` / `--skip PHASE`. Replaces the old
+  `install-arch.sh` (in git history if you need it).
+  - `scripts/linux/brew.sh` — CLI tooling from `scripts/linux/Brewfile`. The terminal
+    layer: shell utils, tmux, prompt, version managers. Host-side, on `/home`.
+  - `scripts/linux/packages.sh` — only what brew structurally cannot do on Linux: the
+    login shell (chsh needs `/etc/shells`) and fonts (the compositor cannot see brew's
+    prefix). Deliberately two packages. Never runs `pacman -Syu` on SteamOS.
+  - `scripts/linux/distrobox.sh` — provisions `arch-base` as a *development* box only:
+    toolchains, headers, build deps. No terminal layer, and specifically no tmux.
+  - `scripts/linux/stow.sh` — stow with conflict backup, then TPM.
+  - `scripts/linux/lib.sh` — shared helpers; `detect_platform` returns
+    steamos|arch|ostree|unknown, `brew_prefix` resolves across the container boundary.
 - `scripts/packages/Brewfile` — single source of truth for macOS packages.
 - `scripts/sync-installed-packages.sh` — regenerates all package lists from the live machine.
 - `scripts/launchd/` — the weekly-sync launchd agent (macOS).
 
-## Porting a package from brew to Arch (the divergent-package workflow)
+## Porting a package to Linux (the divergent-package workflow)
 
-When a package exists in the Brewfile but not in `install-arch.sh`, and you want it on Linux,
-resolve it deterministically before adding — brew names, pacman names, and AUR names differ
-(e.g. brew `ripgrep` = pacman `ripgrep` but brew `fd` = pacman `fd`; brew `the_silver_searcher`
-= pacman `the_silver_searcher`; brew `rm-improved`/`rip` = AUR `rm-improved`). Steps:
+Brew is now the Linux CLI layer too, so most ports are a one-line copy rather than a name
+translation. Pick the layer FIRST — that decision matters more than the package name:
 
-1. **Check official repos first:**
-   `pacman -Ss '^<name>$'`  (exact) or `pacman -Ss <name>` (fuzzy).
-   If found, add to `PACMAN_PACKAGES` in `install-arch.sh`.
-2. **Else check AUR:**
-   `yay -Ss <name>`  or  `paru -Ss <name>`.
-   If found, add to `AUR_PACKAGES`.
-3. **Else check if it's a cargo/npm/pip/go tool** — install via that toolchain, not the distro.
-   Many brew "formulae" are just Rust/Go binaries (e.g. `lsd`, `sesh`, `zoxide`, `bat`).
-   Prefer the distro package when it exists (updates with the system); fall back to
-   cargo/npm only when neither repo nor AUR has it.
-4. **Verify the binary the config expects actually exists after install** — the package name
-   and the command name often differ. Grep the dotfiles for the command, confirm it resolves.
-5. If no equivalent exists on Linux, note it in `install-arch.sh` with a comment and skip it —
-   do NOT silently drop it. Name the gap.
+1. **Is it a terminal tool** you'd want in a rescue shell or over SSH (shell utility,
+   multiplexer, prompt, fuzzy finder, language version manager)?
+   → add to `scripts/linux/Brewfile`. Confirm it exists for Linux first:
+   `brew info --formula <name>` and check the bottle list includes `x86_64_linux`.
+   Many macOS formulae are macOS-only; the Brewfile header records the ones already ruled out.
+
+2. **Is it a toolchain, header, or build dependency** for a project?
+   → add to `DEV_PACKAGES` / `MEDIA_PACKAGES` in `scripts/linux/distrobox.sh`, using pacman
+   names. Verify with `pacman -Ss '^<name>$'` inside the box. Names diverge from brew
+   (brew `rm-improved` = AUR `rm-improved` = binary `rip`).
+
+3. **Is it a login shell or a font?**
+   → `scripts/linux/packages.sh`. These are the only two categories brew cannot serve:
+   `chsh` requires `/etc/shells`, and the compositor cannot see brew's prefix. Keep this
+   list tiny — on SteamOS every host package permanently shadows the base image via the
+   rwfus overlay, and on Bazzite it belongs in the bootc image instead.
+
+4. **Verify the binary the config expects actually exists after install** — package name and
+   command name often differ. Grep the dotfiles for the command, confirm it resolves, and
+   confirm it resolves *on the side you expect* (host vs box).
+
+5. If no Linux equivalent exists, note it with a comment in whichever file it would have
+   gone into and skip it — do NOT silently drop it. Name the gap.
 
 ## Arch distrobox note
 
-Linux target is an **arch distrobox**. After installing CLI tools inside the box, export the
-binaries to the host so they're on the host PATH:
+**The box is a development environment, not the CLI layer.** That inverted in the
+brew-on-host restructure — do not put terminal tooling back in it.
 
-```sh
-distrobox-export --bin /usr/bin/<tool>          # for a specific binary
-distrobox-export --app <app>                     # for GUI apps
-```
+- CLI tools go on the HOST via `scripts/linux/Brewfile`. You want them in a rescue shell
+  and over SSH, where the box may not be running.
+- The box gets toolchains, headers, and build deps only.
+- **Never install tmux in the box.** `$HOME` and `/tmp` are shared, so two tmux servers can
+  reach the same socket dir, and host tmux (SteamOS, pinned 3.5a) and the box's tmux (Arch
+  rolling, 3.7b) refuse to talk. That mismatch is what forced the old `~/bin/tmux`
+  forwarding shim. One tmux, host-side, from brew. From inside the box the same binary is
+  reachable at `$(brew_prefix)/bin/tmux` — see `brew_prefix` in `scripts/linux/lib.sh`,
+  since distrobox mounts the host's `/home` at `/run/host/home` but not `/home/linuxbrew`.
 
-Only export what you actually use from the host. Re-run after adding new tools.
+`distrobox-export --bin` is now rarely needed. Reach for it only when a *dev* binary that
+genuinely cannot live on the host has to be callable from the host PATH.
 
 ## Stow
 
