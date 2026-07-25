@@ -1,0 +1,148 @@
+# Brewfile.linux — CLI layer for Bazzite / Linux
+#
+# Source: gyatfiles/scripts/packages/Brewfile (macOS) + install-arch.sh PACMAN_PACKAGES.
+# Homebrew ships preinstalled on Bazzite and is Universal Blue's documented installer
+# for CLI/TUI apps, so this file is the whole CLI layer -- no rpm-ostree layering.
+#
+# Apply:  brew bundle --file=~/gyatfiles/scripts/packages/Brewfile.linux
+# Check:  brew bundle check --file=... ; Prune: brew bundle cleanup --file=...
+#
+# NOT here, deliberately:
+#   - casks           -> macOS-only. GUI apps on Bazzite are flatpaks.
+#   - coreutils, openssl@3, pkgconf, autoconf, glib, icu4c, harfbuzz, libxml2,
+#     libmtp, libraqm, opus, pillow, protobuf, miniupnpc, squashfs
+#                     -> these exist to patch up macOS. On Linux they are the system
+#                        or arrive as transitive deps. Installing them shadows the
+#                        distro copy and is how you get subtle ABI breakage.
+#   - carthage, cliclick, displayplacer, imagesnap, swiftlint, xcbeautify,
+#     xcode-build-server, xcodegen, firefoxpwa, uniclipboard, qt
+#                     -> macOS/Xcode-only or better from the distro.
+#   - mysql@8.4, postgresql@14, memcached
+#                     -> servers belong in podman/distrobox, not on the host PATH.
+#   - zsh             -> must be a real login shell for chsh, so it is layered in the
+#                        bootc image, NOT installed here. See the migration wargame.
+#   - ttf-jetbrains-mono-nerd -> font casks are macOS-only; the Nerd Font is installed by
+#                        scripts/linux/packages.sh from the distro instead.
+#   - ghostty         -> NO Linux formula (checked: cask only, macOS-only). Stays a gap;
+#                        install from the distro or build it. ~/bin/ghostty-gamescope is
+#                        only a wrapper and does not provide the terminal itself.
+#   - claude-code     -> cask only, macOS-only. Installed by scripts/linux/ai-tools.sh.
+#   - codex           -> no formula. Installed by scripts/linux/ai-tools.sh.
+#   - opencode        -> HAS a Linux formula, but is installed by ai-tools.sh alongside
+#                        the rest of the AI stack so there is one source of truth.
+
+# ─── taps ────────────────────────────────────────────────────────────────────
+tap "michelkazi/tap"        # rtk
+tap "peonping/tap"          # peon-ping
+tap "supabase/tap"
+tap "coursier/formulas"     # Scala
+tap "scalacenter/bloop"     # Scala
+tap "dwijnand/extras"       # Scala (sbt-extras)
+tap "olets/tap"
+tap "molovo/revolver"
+tap "wtfutil/wtfutil"
+tap "rjyo/moshi", trusted: true
+
+# ─── shell + prompt ──────────────────────────────────────────────────────────
+brew "starship"             # single prompt; powerlevel10k/pure intentionally dropped
+brew "zsh-autosuggestions"
+brew "zsh-syntax-highlighting"
+brew "thefuck"
+brew "zoxide"
+brew "sesh"
+brew "tmux"                 # the ONLY tmux on the box -- no shim, no TMUX_TMPDIR split
+brew "stow"
+
+# ─── core CLI ────────────────────────────────────────────────────────────────
+brew "bat"
+brew "fd"
+brew "fzf"
+brew "jq"
+brew "lsd"
+brew "ripgrep"
+brew "rm-improved"          # rip
+brew "tree"
+brew "wget"
+brew "curl"
+brew "parallel"
+brew "gum"
+brew "progressline"
+brew "scooter"
+brew "fswatch"
+brew "httpie"
+brew "mosh"
+brew "nmap"
+brew "sshpass"
+brew "wakeonlan"
+brew "gnu-typist"
+brew "lnav"                 # was a loose 76MB binary in ~/bin
+
+# ─── git / dev workflow ──────────────────────────────────────────────────────
+brew "git"
+brew "gh"
+brew "git-delta"
+brew "diff-so-fancy"
+brew "git-lfs"
+brew "lazygit"
+brew "lazysql"
+brew "pre-commit"
+brew "gnupg"
+
+# ─── editors / language servers ──────────────────────────────────────────────
+brew "neovim"
+brew "lua"
+brew "luarocks"
+brew "tree-sitter"
+brew "pyright"
+
+# ─── languages / toolchains ──────────────────────────────────────────────────
+brew "go"
+brew "node"
+brew "fnm"
+brew "bun"                  # was a loose 88MB install in ~/.bun
+brew "python"
+brew "pipx"
+brew "uv"                   # was a loose 58MB binary in ~/.local/bin; also backs graphify
+brew "pyenv"
+brew "rbenv"
+brew "rustup"
+brew "openjdk@21"           # Scala/JVM work; openjdk@11 dropped as unused
+brew "bazel"
+brew "cmake"
+brew "ninja"
+brew "clang-format"
+brew "thrift"               # Strava IDL
+
+# ─── scala: taps mirrored from macOS; formulae installed via coursier, not brew ──
+
+# ─── cloud / k8s ─────────────────────────────────────────────────────────────
+brew "awscli"
+brew "kubernetes-cli"
+brew "kubectx"
+brew "k9s"
+brew "rclone"
+brew "supabase/tap/supabase", trusted: true
+
+# ─── lint / CI ───────────────────────────────────────────────────────────────
+brew "shellcheck"
+brew "actionlint"
+
+# ─── docs / media ────────────────────────────────────────────────────────────
+brew "pandoc"
+brew "graphviz"
+brew "d2"
+brew "doxygen"
+brew "imagemagick"
+brew "ffmpeg"
+brew "gifsicle"
+brew "tesseract"
+brew "jpeg-xl"
+brew "qpdf"
+brew "potrace"
+
+# ─── personal ────────────────────────────────────────────────────────────────
+brew "rtk"
+brew "wtfutil"
+brew "herdr"
+brew "rover"
+brew "rjyo/moshi/moshi-hook"   # VERIFY on Linux: was a prebuilt binary in ~/bin on the Deck

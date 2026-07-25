@@ -24,7 +24,7 @@ for arg in "$@"; do
 done
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
-    echo "Error: install.sh supports macOS only; use install-arch.sh on Arch Linux"
+    echo "Error: install.sh supports macOS only; use install.linux.sh on Linux"
     exit 1
 fi
 
