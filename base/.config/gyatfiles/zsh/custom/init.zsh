@@ -1,5 +1,19 @@
 [[ "$OSTYPE" == darwin* ]] || return
 
+if ! command -v brew >/dev/null 2>&1; then
+  for brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [[ -x "$brew_path" ]]; then
+      eval "$("$brew_path" shellenv zsh)"
+      break
+    fi
+  done
+  unset brew_path
+fi
+if command -v brew >/dev/null 2>&1; then
+  typeset -U path
+  path=("$HOME/.cargo/bin" "$(brew --prefix rustup)/bin" "$path[@]")
+fi
+
 if [[ -z "$TMUX" && -z "${DOTFILES_NO_TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
   tmux new -A -s BASE
 fi

@@ -14,7 +14,6 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/gyatfiles}"
 BREWFILE="$DOTFILES_DIR/scripts/packages/Brewfile"
 DRY_RUN=0
 SETUP_FAILED=0
-BUNDLE_FAILED=0
 
 for arg in "$@"; do
     case "$arg" in
@@ -50,13 +49,25 @@ if [[ -L "$HOME/.oh-my-zsh" ]] && [[ "$(readlink "$HOME/.oh-my-zsh")" == *"gyatf
 fi
 
 # --- Homebrew ---------------------------------------------------------------
-if ! command -v brew &> /dev/null; then
+if ! command -v brew &>/dev/null; then
+    for brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+        if [[ -x "$brew_path" ]]; then
+            eval "$("$brew_path" shellenv)"
+            break
+        fi
+    done
+fi
+if ! command -v brew &>/dev/null; then
     if [[ $DRY_RUN -eq 1 ]]; then
         echo "[dry-run] would install Homebrew"
     else
         echo "Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        [[ $(uname -m) == "arm64" ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || exit 1
+        if [[ -x /opt/homebrew/bin/brew ]]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
     fi
 else
     echo "Homebrew already installed"
@@ -80,53 +91,58 @@ if [[ ! -f "$BREWFILE" ]]; then
     exit 1
 fi
 
+# Homebrew core provides wtfutil. The legacy tap's formula fails tap validation.
+export HOMEBREW_BUNDLE_TAP_SKIP="${HOMEBREW_BUNDLE_TAP_SKIP:+$HOMEBREW_BUNDLE_TAP_SKIP }wtfutil/wtfutil"
+# Homebrew disabled this cask because it fails Gatekeeper validation.
+export HOMEBREW_BUNDLE_CASK_SKIP="${HOMEBREW_BUNDLE_CASK_SKIP:+$HOMEBREW_BUNDLE_CASK_SKIP }ytmdesktop-youtube-music"
+
 echo ""
 echo "=== Packages ==="
 if [[ $DRY_RUN -eq 1 ]]; then
-    # `check` exits nonzero and lists everything missing; that's the point of a dry run.
-    brew bundle check --file="$BREWFILE" --verbose || true
-else
-    # First pass: taps, formulae, casks, npm, uv. cargo entries may fail here
-    # if the Rust toolchain isn't up yet; the second pass below fixes that.
-    echo "Running brew bundle (pass 1)..."
-    if ! brew bundle install --file="$BREWFILE"; then
-        echo "brew bundle pass 1 failed; continuing to Rust before retry"
-        BUNDLE_FAILED=1
+    echo "[dry-run] would prepare Rust and uv before installing the bundle"
+    if command -v brew &>/dev/null; then
+        brew bundle check --file="$BREWFILE" --verbose || true
     fi
+else
+    export PATH="$HOME/.cargo/bin:$PATH"
+    rustup_bin="$(brew --prefix rustup)/bin"
+    if [[ -d "$rustup_bin" ]]; then
+        export PATH="$PATH:$rustup_bin"
+    fi
+    if ! cargo --version &>/dev/null; then
+        if brew install rustup; then
+            export PATH="$rustup_bin:$PATH"
+            rustup default stable || SETUP_FAILED=1
+        else
+            SETUP_FAILED=1
+        fi
+    fi
+    command -v uv >/dev/null 2>&1 || brew install uv || SETUP_FAILED=1
+    brew bundle install --file="$BREWFILE" || SETUP_FAILED=1
+    # The shell aliases and Ghostty config expect these on a fresh Mac.
+    command -v lsd >/dev/null 2>&1 || brew install lsd || SETUP_FAILED=1
+    brew install --cask claude-code codex font-fira-code-nerd-font || SETUP_FAILED=1
 fi
 
-# --- Rust -------------------------------------------------------------------
-echo ""
-echo "=== Rust ==="
+# --- Claude Code -------------------------------------------------------------
+CLAUDE_DIR="$HOME/.claude"
+CLAUDE_THEME="$DOTFILES_DIR/themes/vector/claude-code"
 if [[ $DRY_RUN -eq 1 ]]; then
-    if command -v cargo &> /dev/null; then
-        echo "[dry-run] Rust already initialized"
-    elif command -v rustup-init &> /dev/null; then
-        echo "[dry-run] would run: rustup-init -y"
-    else
-        echo "[dry-run] Rust requires rustup from the Brewfile"
+    echo "[dry-run] would set up the Vector status line for Claude Code"
+elif mkdir -p "$CLAUDE_DIR"; then
+    if [[ ! -e "$CLAUDE_DIR/vector-statusline.sh" && ! -L "$CLAUDE_DIR/vector-statusline.sh" ]]; then
+        ln -s "$CLAUDE_THEME/vector-statusline.sh" "$CLAUDE_DIR/vector-statusline.sh" || SETUP_FAILED=1
     fi
-elif command -v cargo &> /dev/null; then
-    echo "Rust already initialized"
-elif command -v rustup-init &> /dev/null; then
-    echo "Initializing Rust toolchain..."
-    rustup-init -y
-    export PATH="$HOME/.cargo/bin:$PATH"
+    if [[ ! -e "$CLAUDE_DIR/settings.json" && ! -L "$CLAUDE_DIR/settings.json" ]]; then
+        if settings="$(jq 'del(._comment)' "$CLAUDE_THEME/settings-snippet.json")"; then
+            (set -o noclobber; printf '%s\n' "$settings" > "$CLAUDE_DIR/settings.json") || SETUP_FAILED=1
+        else
+            SETUP_FAILED=1
+        fi
+    fi
 else
-    echo "Error: cargo and rustup-init are unavailable"
     SETUP_FAILED=1
 fi
-
-if [[ $DRY_RUN -eq 0 && $BUNDLE_FAILED -eq 1 ]] && command -v cargo &> /dev/null; then
-    echo "Running brew bundle (pass 2)..."
-    if brew bundle install --file="$BREWFILE"; then
-        BUNDLE_FAILED=0
-    else
-        echo "brew bundle pass 2 failed"
-    fi
-fi
-
-[[ $BUNDLE_FAILED -eq 1 ]] && SETUP_FAILED=1
 
 # --- Stow -------------------------------------------------------------------
 echo ""
@@ -145,7 +161,11 @@ for dir in "${STOW_DIRS[@]}"; do
     fi
     if [[ $DRY_RUN -eq 1 ]]; then
         echo "[dry-run] stow $dir:"
-        LC_ALL=C LANG=C stow -n -v -d "$DOTFILES_DIR" -t "$HOME" "$dir" 2>&1 | sed 's/^/    /'
+        if command -v stow &>/dev/null; then
+            LC_ALL=C LANG=C stow -n -v -d "$DOTFILES_DIR" -t "$HOME" "$dir" 2>&1 | sed 's/^/    /' || SETUP_FAILED=1
+        else
+            echo "    would stow $dir after Homebrew installs Stow"
+        fi
     elif LC_ALL=C LANG=C stow -n -d "$DOTFILES_DIR" -t "$HOME" "$dir" 2>&1 | grep -q "existing target"; then
         echo "Conflict: $dir (run 'stow --adopt $dir' to adopt existing files)"
         SETUP_FAILED=1
