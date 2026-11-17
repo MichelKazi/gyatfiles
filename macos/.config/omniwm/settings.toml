@@ -512,6 +512,16 @@ id = "30E8E7DE-B268-4C2C-A665-728C6D30A659"
 layout = "float"
 titleRegex = "Settings|Install"
 
+[[appRules]]
+assignToWorkspace = "4"
+bundleId = "notion.id"
+id = "B9665382-97DD-4446-ACB4-A7C55A96C9FE"
+
+[[appRules]]
+assignToWorkspace = "4"
+bundleId = "com.linear"
+id = "1AFC513E-4AF2-467C-B8D9-3EC65CB0337B"
+
 [[hotkeys]]
 binding = "Unassigned"
 id = "toggleScratchpad.1"
@@ -913,19 +923,19 @@ binding = "Control+Command+Grave"
 id = "focusMonitorLast"
 
 [[hotkeys]]
-binding = "Unassigned"
+binding = "Control+Option+Shift+H"
 id = "moveWorkspaceToMonitor.left"
 
 [[hotkeys]]
-binding = "Control+Option+X"
+binding = "Control+Option+Shift+L"
 id = "moveWorkspaceToMonitor.right"
 
 [[hotkeys]]
-binding = "Unassigned"
+binding = "Control+Option+Shift+K"
 id = "moveWorkspaceToMonitor.up"
 
 [[hotkeys]]
-binding = "Unassigned"
+binding = "Control+Option+Shift+J"
 id = "moveWorkspaceToMonitor.down"
 
 [[hotkeys]]
