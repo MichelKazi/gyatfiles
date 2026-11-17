@@ -16,3 +16,7 @@ tmux/vector.conf.work-*
 
 # backups
 *.bak
+
+# Temporary package inventory files
+scripts/packages/.sync-lock/
+scripts/packages/.sync.*/

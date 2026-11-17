@@ -263,3 +263,12 @@ cargo "cargo-release"
 cargo "create-tauri-app"
 cargo "lsd"
 uv "graphifyy[bedrock]"
+
+# Captured from locally installed packages.
+brew "rust"
+brew "starship"
+brew "uv"
+cask "claude-code"
+cask "codex"
+cask "font-fira-code-nerd-font"
+cask "omniwm"

@@ -14,26 +14,26 @@ blue = 0.979300037944676
 green = 1.0
 red = 0.08458520228437894
 
-[borders.gradient]
-enabled = true
-direction = "topLeftToBottomRight"
-
-[borders.gradient.start]
-red = 0.133
-green = 0.827
-blue = 0.933
-alpha = 1.0
-
-[borders.gradient.end]
-red = 0.486
-green = 0.227
-blue = 0.929
-alpha = 1.0
-
 [borders.glow]
 enabled = true
-radius = 11.0
 opacity = 0.55
+radius = 11.0
+
+[borders.gradient]
+direction = "topLeftToBottomRight"
+enabled = true
+
+[borders.gradient.end]
+alpha = 1.0
+blue = 0.929
+green = 0.227
+red = 0.486
+
+[borders.gradient.start]
+alpha = 1.0
+blue = 0.933
+green = 0.827
+red = 0.133
 
 [clipboard]
 historyEnabled = false
@@ -137,14 +137,13 @@ allowOverscroll = false
 alwaysCenterSingleColumn = true
 centerFocusedColumn = "never"
 containerPrimarySpanPresets = [0.3333333333333333, 0.5, 0.6666666666666666]
-defaultContainerPrimarySpan = 0.5
 edgeGaps = true
 infiniteLoop = false
 moveWindowStacksIntoColumn = true
 overscrollVisibleStripPercent = 5
 resizeStepPercent = 5
 singleWindowFit = "fill"
-visibleContainerCount = 2
+visibleContainerCount = 3
 
 [overview]
 enabled = true
@@ -481,6 +480,37 @@ id = "14F539CE-80B2-420B-8DD3-3A15049DC83A"
 assignToWorkspace = "8"
 bundleId = "com.apple.MobileSMS"
 id = "D446BCAA-B1B3-4C9C-8D52-973EC5561406"
+
+[[appRules]]
+assignToWorkspace = "2"
+bundleId = "app.zen-browser.zen"
+id = "9B7E2368-BB14-4312-A9A0-168C37494268"
+
+[[appRules]]
+assignToWorkspace = "5"
+bundleId = "us.zoom.xos"
+id = "1802C9BF-2CED-4E82-8696-42466722B8E3"
+
+[[appRules]]
+assignToWorkspace = "7"
+bundleId = "com.brave.Browser.app.eikjhbkpemdappjfcmdeeeamdpkgabmk"
+id = "FB069050-9F9D-4A97-A1CA-3BAB1E5641B0"
+
+[[appRules]]
+bundleId = "com.zwift.ZwiftLauncher"
+id = "BCB33ED4-541A-4932-A627-A4A75106753D"
+layout = "float"
+
+[[appRules]]
+bundleId = "today.vial"
+id = "2AECBA78-C31A-43E1-8147-EF421DFEE3B7"
+layout = "float"
+
+[[appRules]]
+bundleId = ""
+id = "30E8E7DE-B268-4C2C-A665-728C6D30A659"
+layout = "float"
+titleRegex = "Settings|Install"
 
 [[hotkeys]]
 binding = "Unassigned"
@@ -1438,34 +1468,3 @@ name = "9"
 
 [workspaces.monitorAssignment]
 type = "main"
-
-[[appRules]]
-bundleId = "app.zen-browser.zen"
-assignToWorkspace = "2"
-id = "9B7E2368-BB14-4312-A9A0-168C37494268"
-
-[[appRules]]
-bundleId = "us.zoom.xos"
-assignToWorkspace = "5"
-id = "1802C9BF-2CED-4E82-8696-42466722B8E3"
-
-[[appRules]]
-bundleId = "com.brave.Browser.app.eikjhbkpemdappjfcmdeeeamdpkgabmk"
-assignToWorkspace = "7"
-id = "FB069050-9F9D-4A97-A1CA-3BAB1E5641B0"
-
-[[appRules]]
-bundleId = "com.zwift.ZwiftLauncher"
-layout = "float"
-id = "BCB33ED4-541A-4932-A627-A4A75106753D"
-
-[[appRules]]
-bundleId = "today.vial"
-layout = "float"
-id = "2AECBA78-C31A-43E1-8147-EF421DFEE3B7"
-
-[[appRules]]
-bundleId = ""
-titleRegex = "Settings|Install"
-layout = "float"
-id = "30E8E7DE-B268-4C2C-A665-728C6D30A659"

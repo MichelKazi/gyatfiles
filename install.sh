@@ -178,6 +178,19 @@ for dir in "${STOW_DIRS[@]}"; do
     fi
 done
 
+# --- Package inventory jobs --------------------------------------------------
+for agent in "$DOTFILES_DIR"/scripts/launchd/*.plist; do
+    target="$HOME/Library/LaunchAgents/$(basename "$agent")"
+    if [[ $DRY_RUN -eq 1 ]]; then
+        echo "[dry-run] would install and load launch agent: $target"
+    else
+        mkdir -p "$HOME/Library/LaunchAgents"
+        launchctl bootout "gui/$(id -u)" "$target" 2>/dev/null || true
+        cp "$agent" "$target" || { SETUP_FAILED=1; continue; }
+        launchctl bootstrap "gui/$(id -u)" "$target" || SETUP_FAILED=1
+    fi
+done
+
 echo ""
 if [[ $SETUP_FAILED -eq 0 ]]; then
     echo "=== Setup Complete ==="
