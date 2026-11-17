@@ -85,7 +85,7 @@ workspaceAutoBackAndForth = false
 
 [gestures]
 adoptNativeMoveAcrossDisplays = false
-adoptNativeResize = false
+adoptNativeResize = true
 dwindleGroupDragAcrossDisplays = "group"
 fingerCount = 3
 invertDirection = true
