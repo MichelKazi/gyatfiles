@@ -1458,7 +1458,7 @@ layoutType = "niri"
 name = "8"
 
 [workspaces.monitorAssignment]
-type = "main"
+type = "secondary"
 
 [[workspaces]]
 displayName = "Scratch"
