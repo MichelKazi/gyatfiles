@@ -236,11 +236,14 @@ cask "nikitabobko/tap/aerospace", trusted: true
 cask "alt-tab"
 # Distribution of the Python and R programming languages for scientific computing
 cask "anaconda"
+cask "chatgpt"
 cask "displaylink"
 # Online diagram software
 cask "drawio"
+cask "firefox"
 # Terminal emulator that uses platform-native UI and GPU acceleration
 cask "ghostty"
+cask "karabiner-elements"
 # Open-source keystroke visualiser
 cask "keycastr"
 cask "linear"
@@ -250,9 +253,13 @@ cask "linearmouse"
 cask "monitorcontrol"
 # Reverse proxy, secure introspectable tunnels to localhost
 cask "ngrok"
+cask "notion"
+cask "okta-verify"
 cask "barutsrb/tap/omniwm", trusted: true if MacOS.version >= :tahoe
 # Toolbox companion for QMK Firmware
 cask "qmk-toolbox"
+cask "slack"
+cask "tailscale-app"
 # Cross-device clipboard syncing tool
 cask "uniclipboard"
 # GPU-accelerated cross-platform terminal emulator and multiplexer
