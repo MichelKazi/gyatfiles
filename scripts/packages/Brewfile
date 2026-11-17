@@ -236,6 +236,7 @@ cask "nikitabobko/tap/aerospace", trusted: true
 cask "alt-tab"
 # Distribution of the Python and R programming languages for scientific computing
 cask "anaconda"
+cask "displaylink"
 # Online diagram software
 cask "drawio"
 # Terminal emulator that uses platform-native UI and GPU acceleration
