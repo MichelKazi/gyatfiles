@@ -242,6 +242,7 @@ cask "drawio"
 cask "ghostty"
 # Open-source keystroke visualiser
 cask "keycastr"
+cask "linear"
 # Customise mouse behavior
 cask "linearmouse"
 # Tool to control external monitor brightness & volume
@@ -272,3 +273,6 @@ cask "claude-code"
 cask "codex"
 cask "font-fira-code-nerd-font"
 cask "omniwm"
+
+# Captured from locally installed packages.
+npm "opencode-ai"
